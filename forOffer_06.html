@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        /**
+     * Definition for singly-linked list.
+     * function ListNode(val) {
+     *     this.val = val;
+     *     this.next = null;
+     * }
+     */
+        function ListNode(val) {
+            this.val = val;
+            this.next = null;
+        }
+        /**
+         * @param {ListNode} head
+         * @return {number[]}
+         */
+        var reversePrint = function (head) {
+            if (!head) {
+                return head;
+            }
+            let count = head.length
+            if (count <= 1) {
+                return head
+            }
+
+
+            if (count % 2 == 0) {
+                // 偶数，头尾互换
+                for (let i = 0; i < count / 2; i++) {
+                    let from = head[i];
+                    let to = head[count - 1 - i];
+
+                    head[i] = to;
+                    head[count - i - 1] = from;
+                }
+            } else {
+                // 基数，沿着中间互换
+                for (let i = 0; i < (count - 1) / 2; i++) {
+                    let from = head[i];
+                    let to = head[count - 1 - i];
+
+                    head[i] = to;
+                    head[count - i - 1] = from;
+                }
+
+            }
+
+            return head
+        };
+
+        console.log(reversePrint([1, 3, 2]))
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        function TreeNode(val) {
+            this.val = val;
+            this.left = this.right = null;
+        }
+        //      3
+        //     / \
+        //    9  20
+        //   /| /  \
+        //  1 4 15   7
+        /**
+         * @param {number[]} preorder
+         * @param {number[]} inorder
+         * @return {TreeNode}
+         */
+        // var preorder = [3, 9, 1, 4, 20, 15, 7]
+        // var inorder = [1, 9, 4, 3, 15, 20, 7]
+        var preorder = [1, 2, 4, 5, 7, 8, 3, 6]
+        var inorder = [4, 2, 7, 5, 8, 1, 3, 6]
+        // var preorder = [3, 9, 20, 15, 7];
+        // var inorder = [9, 3, 15, 20, 7];
+
+        var buildTree = function (preorder, inorder) {
+            var start = preorder[0];
+            var root = new TreeNode(start);
+            do_build(root, preorder, inorder)
+
+            return root;
+        };
+
+        var do_build = function (node, preorder, inorder) {
+            var start = node.val;
+
+            var idxOfStart = inorder.indexOf(start);
+            var rightParts = [];
+            var leftParts = [];
+            if (idxOfStart == 0) { // 左侧为空
+                rightParts = inorder.slice(idxOfStart + 1)
+            } else {// 左右两侧都有数据
+                leftParts = inorder.slice(0, idxOfStart);
+                rightParts = inorder.slice(idxOfStart + 1)
+            }
+            // 从分割的两部分，分别产生新的 preorder 和 inorder
+            if (leftParts.length == 1) {
+                node.left = leftParts[0];
+            } else if (leftParts.length > 1) {
+                //
+                var newPreorder = [];
+                for (var i = 0; i < preorder.length; i++) {
+                    if (leftParts.indexOf(preorder[i]) > -1) {
+                        newPreorder.push(preorder[i])
+                    }
+                }
+                var leftRoot = new TreeNode(newPreorder[0]);
+                node.left = leftRoot;
+                do_build(leftRoot, newPreorder, leftParts)
+            }
+
+            if (rightParts.length == 1) {
+                node.right = rightParts[0];
+            } else if (rightParts.length > 1) {
+                var newPreorder = [];
+                for (var i = 0; i < preorder.length; i++) {
+                    if (rightParts.indexOf(preorder[i]) > -1) {
+                        newPreorder.push(preorder[i])
+                    }
+                }
+                var rightNode = new TreeNode(newPreorder[0]);
+                node.right = rightNode;
+                do_build(rightNode, newPreorder, rightParts)
+            }
+        }
+
+        var root = buildTree(preorder, inorder);
+        console.log(root)
+    </script>
+</body>
+
+</html>

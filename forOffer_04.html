@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        var _new = [];
+        var do_replace = function (_start, _end, _original) {
+            if (_end - _start == 1) {
+                if (_original[_start] === ' ') {
+                    _new.push('%20')
+                } else {
+                    _new.push(_original[_start])
+                }
+            } else if (_end - _start > 1) {
+                var pivot = Math.floor((_end + _start) / 2);
+                do_replace(_start, pivot, _original);
+                do_replace(pivot, _end, _original);
+            }
+        }
+        /**
+         * @param {string} s
+         * @return {string}
+         */
+        var replaceSpace = function (s) {
+            _new = [];
+            var len = s.length;
+            do_replace(0, len, s);
+            return _new.join('');
+        };
+
+        console.log(replaceSpace("We are happy."))
+    </script>
+</body>
+
+</html>
