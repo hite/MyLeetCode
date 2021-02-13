@@ -19,14 +19,7 @@
          * @return {void}
          */
         CQueue.prototype.appendTail = function (value) {
-            // 如果发现备用数组里有值，而正常数组里没数据，需要先还原
-            if (this.backupStack.length > 0 && this.normalStack.length == 0) {
-                var top = this.backupStack.pop()
-                while (top !== undefined) {
-                    this.normalStack.push(top);
-                    top = this.backupStack.pop()
-                }
-            }
+            // 即使是已经删除过元素了，也不需要还原，因为a 作为添加的入口，b 是删除的入口
             this.normalStack.push(value);
         };
 
@@ -38,9 +31,13 @@
                 // 利用上一次倒腾的数据，直接返回
                 return this.backupStack.pop();
             }
-            if (this.normalStack.length == 0) {
+            if (this.normalStack.length == 0 && this.backupStack.length == 0) {
                 return -1
             }
+            if (this.normalStack.length == 1 && this.backupStack.length == 0) {
+                return this.normalStack.pop()
+            }
+            // back 队列里没元素了，且大于 2 个,再倒腾原始元素
             var top = this.normalStack.pop()
             while (top !== undefined) {
                 this.backupStack.push(top);
