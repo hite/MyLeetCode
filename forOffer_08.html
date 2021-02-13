@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        var CQueue = function () {
+            this.normalStack = [];
+            this.backupStack = [];
+        };
+
+        /** 
+         * @param {number} value
+         * @return {void}
+         */
+        CQueue.prototype.appendTail = function (value) {
+            // 如果发现备用数组里有值，而正常数组里没数据，需要先还原
+            if (this.backupStack.length > 0 && this.normalStack.length == 0) {
+                var top = this.backupStack.pop()
+                while (top !== undefined) {
+                    this.normalStack.push(top);
+                    top = this.backupStack.pop()
+                }
+            }
+            this.normalStack.push(value);
+        };
+
+        /**
+         * @return {number}
+         */
+        CQueue.prototype.deleteHead = function () {
+            if (this.backupStack.length > 0) {
+                // 利用上一次倒腾的数据，直接返回
+                return this.backupStack.pop();
+            }
+            if (this.normalStack.length == 0) {
+                return -1
+            }
+            var top = this.normalStack.pop()
+            while (top !== undefined) {
+                this.backupStack.push(top);
+                top = this.normalStack.pop()
+            }
+            // 不着急还原
+            return this.backupStack.pop();
+        };
+
+        /**
+         * Your CQueue object will be instantiated and called as such:
+         * var obj = new CQueue()
+         * obj.appendTail(value)
+         * var param_2 = obj.deleteHead()
+         */
+
+    </script>
+</body>
+
+</html>
