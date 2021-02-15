@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        /**
+     * @param {number} n
+     * @return {number}
+     */
+        var Cache = {};
+        Cache[0] = 0;
+        Cache[1] = 1;
+        var _fib = function (n) {
+            if (n === 0) {
+                return 0
+            }
+            if (n === 1) {
+                return 1
+            }
+            // 尝试读缓存
+            if (Cache[n - 1] !== undefined && Cache[n - 2] !== undefined) {
+                return Cache[n - 1] + Cache[n - 2];
+            }
+            // 重建。从 2 开始，计算所有 小于 n 的数据；
+            for (let i = 2; i < n; i++) {
+                if (Cache[i] === undefined) {
+                    // 保证前面是有值的
+                    Cache[i] = (Cache[i - 1] + Cache[i - 2]) % 1000000007;
+                }
+            }
+
+            return Cache[n - 1] + Cache[n - 2];
+        };
+
+        var fib = function (n) {
+            return _fib(n) % 1000000007;
+        }
+
+        var fib2 = function (n) {
+            return (1 / Math.sqrt(5)) * (Math.pow((1 + Math.sqrt(5)) / 2, n) - Math.pow((1 - Math.sqrt(5)) / 2, n))
+        }
+    </script>
+</body>
+
+</html>
