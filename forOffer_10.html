@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        /**
+     * @param {number} n
+     * @return {number}
+     */
+        var numWays = function (n) {
+            if (n == 0) return 1;
+            if (n <= 2) {
+                return n;
+            }
+            var prepre = 1, pre = 2;
+            var tmp;
+            for (var i = 3; i <= n; i++) {
+                tmp = (pre + prepre) % 1000000007;
+                prepre = pre;
+                pre = tmp;
+            }
+            return tmp;
+        };
+    </script>
+</body>
+
+</html>

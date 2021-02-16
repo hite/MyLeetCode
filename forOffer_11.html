@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        /**
+     * @param {number[]} numbers
+     * @return {number}
+     */
+        // 依赖于 排序，逆转之后，前值大于后值。
+        //
+        var minArray = function (numbers) {
+            if (numbers && numbers.length > 0) {
+                let start = 0;
+                let limit = numbers.length - 1;
+
+                // 二分法
+
+                while (limit - start > 1) {
+                    // 如果未逆转
+                    if (numbers[start] < numbers[limit]) {
+                        return numbers[start];
+                    }
+                    let idx = Math.floor((start + limit) / 2)
+                    // 如果遇到 相同的，移动下标的同时，去重
+                    // 
+                    if (numbers[start] == numbers[idx]) {
+                        // 是前面全是一样的吗？
+                        let isSame = true;
+                        let standard = numbers[start];
+                        for (let i = start; i <= idx; i++) {
+                            const element = numbers[i];
+                            if (element !== standard) {
+                                isSame = false;
+                                break;
+                            }
+                        }
+                        if (isSame) {
+                            start = idx + 1;
+                        } else {
+                            limit = idx;
+                        }
+                        continue;
+                    }
+                    if (numbers[start] < numbers[idx]) {
+                        // 正常的升序部分，丢弃前半部
+                        start = idx + 1;
+                    } else {
+                        limit = idx;
+                    }
+                }
+
+                if (limit - start < 2) {
+                    return Math.min(numbers[limit], numbers[start]);
+                }
+            } else {
+                return undefined;
+            }
+        };
+
+        // var minArray = function (numbers) {
+        //     if (numbers && numbers.length > 0) {
+        //         var min;
+        //         for (var i = numbers.length - 1; i >= 0; i--) {
+        //             if (i == numbers.length - 1) {
+        //                 min = numbers[i];
+        //             } else {
+        //                 if (numbers[i] > min) {
+        //                     break;
+        //                 } else {
+        //                     min = numbers[i];
+        //                 }
+        //             }
+        //         }
+        //         return min;
+        //     } else {
+        //         return undefined;
+        //     }
+        // };
+    </script>
+</body>
+
+</html>
