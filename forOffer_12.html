@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+
+        function locations(substring, string) {
+            var a = [], i = -1;
+            while ((i = string.indexOf(substring, i + 1)) >= 0) a.push(i);
+            return a;
+        }
+        var RowLimit = -1;
+        var ColumnLimit = -1;
+        var CompatStr = null;
+        var indexofLetterInBaord = function (arrOfArray, letter) {
+            if (CompatStr === null) {
+                RowLimit = arrOfArray.length;
+                ColumnLimit = arrOfArray[0].length;
+                CompatStr = "";
+                arrOfArray.forEach(element => {
+                    CompatStr += element.join("");
+                });
+            }
+            var idxs = locations(letter, CompatStr);
+
+            var ret = []
+            for (let i = 0; i < idxs.length; i++) {
+                const idx = idxs[i];
+                ret.push({ x: idx % ColumnLimit, y: Math.floor(idx / ColumnLimit) })// 不需要 / RowLimit
+            }
+            return ret
+        }
+
+        var isSiblingIndx = function (a, b) {
+            return (a.x == b.x && Math.abs(a.y - b.y) == 1) || (a.y == b.y && Math.abs(a.x - b.x) == 1);
+        }
+        /**
+     * @param {character[][]} board
+     * @param {string} word
+     * @return {boolean}
+     */
+
+
+        var findMatchNodes = function (nodeList, targetWord, board) {
+            var preNode = null;
+            if (nodeList.length > 0) {
+                preNode = nodeList[nodeList.length - 1];
+            }
+            var foundNodes = indexofLetterInBaord(board, targetWord);
+            if (preNode == null) {
+                return foundNodes;
+            }
+            var ret = [];
+            for (let i = 0; i < foundNodes.length; i++) {
+                const node = foundNodes[i];
+                if (isSiblingIndx(node, preNode)) {
+                    // 检查是否存在于旧链表里
+                    var duplicated = false;
+                    for (let j = 0; j < nodeList.length; j++) {
+                        const element = nodeList[j];
+                        if (element.x == node.x && element.y == node.y) {
+                            duplicated = true;
+                            break;
+                        }
+                    }
+                    if (duplicated) {
+                        continue;
+                    }
+                    ret.push(node);
+                }
+            }
+            return ret;
+        }
+
+        var maybe = [];
+        var isLegalSequeue = function (seq, word) {
+            if (seq.length !== word.length) {
+                return false;
+            }
+
+            // 检测是否有相同的坐标
+            var marked = {};
+            var duplicate = false
+            for (let i = 0; i < seq.length; i++) {
+                const position = seq[i];
+                var key = position.x + '_' + position.y;
+                if (marked[key]) {
+                    duplicate = true;
+                    break;
+                }
+                marked[key] = true;
+            }
+            return !duplicate;
+        }
+        var matchSequeue = function (nodeList, leftWords, board, word) {
+            if (maybe.length > 0) {
+                return;
+            }
+            if (nodeList.length >= word.length || leftWords.length == 0) {
+                // console.log('done3');
+                // console.log(nodeList);
+                if (isLegalSequeue(nodeList, word)) {
+                    maybe.push(nodeList);
+                }
+                return
+            }
+
+            var targetWord = leftWords[0];
+            var matchedNextNodes = findMatchNodes(nodeList, targetWord, board);
+            if (matchedNextNodes.length == 0) {
+                // console.log('done2');
+                // console.log(nodeList);
+                return;
+            }
+            for (let j = 0; j < matchedNextNodes.length; j++) {
+                const matched = matchedNextNodes[j];
+                var newNodeList = nodeList.concat(matched);
+                matchSequeue(newNodeList, leftWords.slice(1), board, word)
+            }
+        }
+        var exist = function (board, word) {
+            if (board.length === 0) {
+                return false;
+            }
+            if (board[0].length === 0) {
+                return false;
+            }
+
+            if (!word || word.length == 0) {
+                return true;
+            }
+            CompatStr = null;
+            maybe = [];
+            matchSequeue([], word.split(''), board, word);
+            return maybe.length > 0;
+        };
+
+
+
+
+        // var board = [["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]]
+        // var word = "ABCCED"
+        // console.log(exist(board, word));
+
+        // var board = [["a"]], word = "a"
+
+        // console.log(exist(board, word));
+        // var b = [["a", "a", "a", "a"], ["a", "a", "a", "a"], ["a", "a", "a", "a"]];
+        // var a = "aaaaaaaaaaaa"
+        var b = [["b"], ["a"], ["b"], ["b"], ["a"]];
+        var a = "baa";
+        console.log(exist(b, a))
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        // 微软 O365 苏州. https://www.cnblogs.com/kunsoft/p/13781816.html
+        // 一面
+
+        // 算法题：给你一个字符串，输出所有字符能组成的不同的字符串的个数
+        // 如：AAB，输出：8（A, AA, AAB, AB, BA, ABA, BAA, ABA）
+        // 代码（暴力）
+        // 有什么想问的问题？
+        // 小组负责的事情：中国美国双线汇报、Office 技术上 Azure、Azure 技术引入、老应用服务 & 容器化
+        var input = 'aab';
+
+        // 先计算所有字符可能存在的组合，bao
+        let mySet = new Set();
+        // 利用线性规划，
+        function combo(words) {
+            if (words.length == 1) {
+                return [words[0], '']
+            }
+            var ret = []
+            // 所有的字符串都要试试，
+            for (let i = 0; i < words.length; i++) {
+                const first = words[i];
+                // 去掉 first 之后，剩下的元素，组成新的数组
+                let leftWords = [].concat(words);
+                leftWords.splice(i, 1)
+                var arr = combo(leftWords);// 剩下的字符串，尝试组合
+                for (let j = 0; j < arr.length; j++) {
+                    const str = arr[j];
+                    //
+                    ret.push(str);
+                    ret.push(first + str);
+                }
+
+            }
+            return ret;
+        }
+        var elements = input.split('');
+        var all = combo(elements);
+        console.log(all)
+        for (let i = 0; i < all.length; i++) {
+            const element = all[i];
+            mySet.add(element);
+        }
+
+        console.log(mySet)
+    </script>
+</body>
+
+</html>

@@ -28,7 +28,7 @@
                         return numbers[start];
                     }
                     let idx = Math.floor((start + limit) / 2)
-                    // 如果遇到 相同的，移动下标的同时，去重
+                    // 如果遇到 相同的，先进行排查在前面还是后面，排查的条件是否相同
                     // 
                     if (numbers[start] == numbers[idx]) {
                         // 是前面全是一样的吗？
@@ -48,6 +48,7 @@
                         }
                         continue;
                     }
+                    // 没有遇到这种极端情况下，正常做二分
                     if (numbers[start] < numbers[idx]) {
                         // 正常的升序部分，丢弃前半部
                         start = idx + 1;
