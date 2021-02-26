@@ -21,7 +21,7 @@
 
         // 先计算所有字符可能存在的组合，bao
         let mySet = new Set();
-        // 利用线性规划，
+        // 利用线性规划，其实真实类似是回溯算法。我用新创建对象来避免的回溯
         function combo(words) {
             if (words.length == 1) {
                 return [words[0], '']
@@ -53,6 +53,192 @@
         }
 
         console.log(mySet)
+
+
+        // 1
+        // 2   9
+        // 3 5 4
+        //     (1, (2, (3), (5), (4)), (9))
+        // 给一棵树，实现序列化和反序列化函数，在Windows记事本上手写，并英文解释问答
+        //     面试官说最好用 non - recursive，然后我懵了不会写最后用的 recursive，代码
+
+
+        function TreeNode(_val) {
+            this.value = _val;
+            this.sons = [];
+        }
+
+        // 反序列化
+        //     (1, (2, (3), (5), (4)), (9))
+        function re_serialize(_str) {//  错误的算法
+            var parts = _str.split('');
+
+            var parent = null;
+            var current = null;
+            for (let i = 0; i < parts.length; i++) {
+                const element = parts[i];
+                if (element === ' ') {
+                    continue;
+                } else if (element === '(') {
+                    var node = new TreeNode();
+
+                    if (current) {
+                        parent = current;
+                    }
+
+                    if (parent) {
+                        parent.sons.push(node);
+                    }
+                    current = node;
+                } else if (element == ',') {
+                    current.sons = [];
+                } else if (element == ')') {
+                    current = parent;
+                } else {
+                    current.value = element;
+                }
+            }
+            console.log(st[0]);
+        }
+        // 递归算法
+        function re_serialize0(_str) {
+            // 去掉左右两个（）括号
+            var str = _str.substring(1, _str.length - 1);
+            var node = new TreeNode();
+            // 查找以“，” 号的分割，注意多个儿子的情况，需要处理子元素的嵌套
+            var strParts = str.split('');
+            // 在遍历过程中，遇到的“（”，“)”，只有这两个符号不存在的时候，才算同级节点
+            var unexpectSymbols = [];
+            var idxs = [];
+            // 遍历寻找分组
+            for (let i = 0; i < strParts.length; i++) {
+                const element = strParts[i];
+                if (element === ',' && unexpectSymbols.length == 0) {
+                    idxs.push(i)
+                } else if (element === ')') {
+                    unexpectSymbols.pop()
+                } else if (element === '(') {
+                    unexpectSymbols.push(element)
+                }
+            }
+            var parts = [];
+            if (idxs.length === 0) {
+                parts.push(str);
+            } else {
+                var start = 0;
+                for (let index = 0; index < idxs.length; index++) {
+                    const element = idxs[index];
+                    parts.push(str.substring(start, element));
+                    start = element + 1;
+                }
+                parts.push(str.substring(start));
+            }
+
+
+            node.value = parts[0].trim()
+            if (parts.length > 1) {
+                // 如果包含“，”号，表示有子元素，分而治之
+                node.sons = [];
+                for (let i = 1; i < parts.length; i++) {
+                    const son = parts[i].trim();
+                    node.sons.push(re_serialize0(son))
+                }
+            }
+            return node;
+        }
+        // 思考下，如果把递归算法变成两层循环的模板。
+        function re_serialize2(_str) {
+            var parts = _str.split('');
+            // 入栈
+            var st = [];
+            for (let i = 0; i < parts.length; i++) {
+                const element = parts[i];
+                if (element === ' ') {
+                    continue;
+                }
+                st.push(element);
+                if (element === ')') {
+                    // 遇到一个结束标注，去寻找它的开启标志
+                    // 出栈直到找到开始标志，以此并创建节点，以 node 再压栈
+                    var popped = st.pop()
+                    var node = null;
+                    while (popped !== '(') {
+                        if (popped === ')') {
+                            node = new TreeNode();
+                        } else if (popped == ',') {
+                            // node.sons = [];
+                        } else if (popped == '(') {
+
+                        } else if (typeof (popped) === 'string') {
+                            node.value = popped;
+                        } else {
+                            node.sons.unshift(popped)
+                        }
+                        popped = st.pop();
+                    }
+                    st.push(node);
+                }
+            }
+            console.log(st[0])
+        }
+        // 序列化
+        var root = new TreeNode(1);
+        var son1_1 = new TreeNode(2);
+        var son1_2 = new TreeNode(9);
+        root.sons.push(son1_1);
+        root.sons.push(son1_2);
+
+        son1_1.sons = [new TreeNode(3), new TreeNode(5), new TreeNode(4)]
+
+        var logs = [];
+        function log(_txt) {
+            // console.log(_txt);
+            logs.push(_txt);
+        }
+
+        function firstTraversal(_root) {
+            log('(' + _root.value)
+            if (_root.sons.length > 0) {
+                log(',');
+            }
+            for (let i = 0; i < _root.sons.length; i++) {
+                if (i > 0) {
+                    log(',');
+                }
+                const element = _root.sons[i];
+                firstTraversal(element)
+            }
+            log(')');
+        }
+        function firstTraversal2(_root) {
+            logs = [];
+
+            var node = _root;
+            var fists = [];
+            while (node || fists.length > 0) {
+                while (node) {
+                    if (logs.length > 0) {
+                        log(',');
+                    }
+                    log('(' + node.value)
+                    fists.push(node);
+                    node = node.sons.shift()
+
+                }
+
+                if (fists.length > 0) {
+                    // 如何处理多分枝输的遍历
+                    var peak = fists[fists.length - 1];
+                    if (peak.sons.length > 1) {
+                        node = peak.sons.shift();
+                    } else {
+                        node = fists.pop();
+                        node = node.sons.shift();
+
+                    }
+                }
+            }
+        }
     </script>
 </body>
 

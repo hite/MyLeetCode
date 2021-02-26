@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        /**
+     * Definition for singly-linked list.
+     */
+        function ListNode(val, next) {
+            this.val = (val === undefined ? 0 : val)
+            this.next = (next === undefined ? null : next)
+        }
+        /**
+         * @param {ListNode} l1
+         * @param {ListNode} l2
+         * @return {ListNode}
+         */
+        // 将运算结果保存在第一个链路，我以为会剩空间，然而并没有。可能和列表分配内存时，不用分配整个 pagesize 4096 有关系吧
+        var addTwoNumbers = function (l1, l2) {
+            var a = l1;
+            var b = l2;
+
+            var nextCarry = 0;// 以 l1 为基础
+            while (a && b) {
+                var sum = a.val + b.val + nextCarry;
+                nextCarry = 0;
+                if (sum >= 10) {
+                    nextCarry = 1;
+                    a.val = sum % 10;
+                } else {
+                    a.val = sum;
+                }
+                a = a.next
+                b = b.next;
+            }
+            // 如果相同，且溢出了
+            if (a == null && b == null && nextCarry > 0) {
+                // 找到 a 的队尾
+                var tailOfA = l1;
+                while (tailOfA.next) {
+                    tailOfA = tailOfA.next;
+                }
+                tailOfA.next = new ListNode(1);
+            }
+            var lastBit;
+            if (a) {
+                a.val += nextCarry;
+                lastBit = a
+            }
+            if (b) {
+                // 找到 a 的队尾, 和 b 链接
+                var tailOfA = l1;
+                while (tailOfA.next) {
+                    tailOfA = tailOfA.next;
+                }
+                b.val += nextCarry;
+                tailOfA.next = b;
+                lastBit = b;
+            }
+
+            if (lastBit) {
+                // 检测是否最高位还需要进位
+                var carrayOfA = lastBit.val >= 10
+
+                while (lastBit && carrayOfA) {
+                    lastBit.val = lastBit.val % 10;
+                    //  进一位了，看看还有必要
+                    if (lastBit.next == null) {
+                        // 新建最高位
+                        lastBit.next = new ListNode(0);
+                    }
+                    lastBit = lastBit.next;
+                    lastBit.val += 1
+                    carrayOfA = lastBit.val >= 10;
+
+                }
+            }
+            console.log(l1);
+            return l1;
+        };
+        // 需要新创建要给数组，不污染就数组
+        var addTwoNumbers2 = function (l1, l2) {
+            var newList = [];
+            var a = l1;
+            var b = l2;
+            var carry = 0;
+
+            var root = null;
+            var parent = null;
+            while (a || b || carry > 0) {
+                var node = new ListNode();
+                if (a && b) {
+                    node.val = a.val + b.val + carry;
+                } else if (a) {
+                    node.val = a.val + carry;
+                } else if (b) {
+                    node.val += b.val + carry;
+                } else {
+                    node.val = carry;
+                }
+
+                carry = node.val >= 10 ? 1 : 0;
+                node.val = node.val % 10;
+                a = a ? a.next : null;
+                b = b ? b.next : null;
+
+                if (root == null) {
+                    root = node;
+                }
+                if (parent) {
+                    parent.next = node;
+                }
+                parent = node;
+            }
+
+            return root;
+        }
+        // [2, 4, 9]
+        //     [5, 6, 4, 9]
+        var l1 = new ListNode(2);
+        var four = new ListNode(4);
+        l1.next = four;
+        var three = new ListNode(9);
+        four.next = three;
+
+        var l2 = new ListNode(5);
+        var five = new ListNode(6);
+        l2.next = five;
+        var sixe = new ListNode(4);
+        five.next = sixe;
+        var nice = new ListNode(9);
+        sixe.next = nice;
+
+        // addTwoNumbers(l1, l2)
+    </script>
+</body>
+
+</html>

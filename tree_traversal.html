@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        function TreeNode(_val) {
+            this.val = _val;
+            this.left = this.right = null;
+        }
+        var root = new TreeNode(1);
+        var left1 = new TreeNode(2);
+        var right1 = new TreeNode(3);
+        root.left = left1;
+        root.right = right1;
+
+        var left2 = new TreeNode(4)
+        left1.left = left2;
+
+        var left3 = new TreeNode(6)
+        left2.right = left3;
+
+        left3.left = new TreeNode(7)
+        left3.right = new TreeNode(8)
+
+        var right2 = new TreeNode(5);
+        right1.right = right2;
+
+        function log(_text) {
+            console.log(_text);
+        }
+        function preTraversal(_root) {
+            log(_root.val)
+            if (_root.left) {
+                preTraversal(_root.left);
+            }
+            if (_root.right) {
+                preTraversal(_root.right);
+            }
+        }
+        function preTraversal2(_root) {
+            var rights = [];
+            var node = _root;
+            while (node) {
+                log(node.val);
+
+                if (node.left == undefined && node.right == undefined) {
+                    node = rights.pop();
+                } else if (node.left == undefined && node.right) {
+                    node = node.right;
+                } else {
+                    if (node.right) {
+                        rights.push(node.right)
+                    }
+                    node = node.left;
+                }
+            }
+        }
+        function preTraversal3(_root) {
+            var rights = [];
+            var node = _root;
+            while (node || rights.length > 0) {
+                while (node) {
+                    log(node.val);
+                    rights.push(node);
+                    node = node.left;
+                }
+                if (rights.length > 0) {
+                    node = rights.pop();
+                    node = node.right
+                }
+            }
+        }
+
+        function inTraversal(_root) {
+
+            if (_root.left) {
+                inTraversal(_root.left);
+            }
+            log(_root.val)
+            if (_root.right) {
+                inTraversal(_root.right);
+            }
+        }
+        function inTraversal2(_root) {
+            var ins = [];
+            var node = _root;
+            while (node || ins.length > 0) {
+                while (node) {
+                    ins.push(node);
+                    node = node.left;
+                }
+                if (ins.length > 0) {
+                    node = ins.pop()
+                    log(node.val);
+                    node = node.right;
+                }
+            }
+        }
+        function lastTraversal(_root) {
+
+            if (_root.left) {
+                lastTraversal(_root.left);
+            }
+            if (_root.right) {
+                lastTraversal(_root.right);
+            }
+            log(_root.val)
+        }
+
+        function lastTraversal2(_root) {
+            var lasts = [];
+            var node = _root;
+            var lastVisit = null;
+            // while 循环其实就是一个递归。只不过不需要保存本地变量，所以这是需要有合适的外部变量来保存递归调用的堆栈。
+
+            while (node || lasts.length > 0) {
+                while (node) {
+                    lasts.push(node);
+                    node = node.left;
+                }
+                if (lasts.length > 0) {
+                    node = lasts[lasts.length - 1];
+                    if (node.right == null || node.right == lastVisit) {
+                        log(node.val);
+                        node = lasts.pop();
+                        lastVisit = node;
+                        node = null;
+                    } else {
+                        node = node.right;
+                    }
+                }
+            }
+
+        }
+
+    </script>
+</body>
+
+</html>
