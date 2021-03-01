@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        /**
+     * Definition for singly-linked list.
+     */
+        function ListNode(val) {
+            this.val = (val === undefined ? 0 : val)
+            this.parent = null;
+            this.sons = [];
+        }
+
+        function log(_text) {
+            console.log(_text)
+        }
+        // 先把输出存储为无向树。并且保存每个接口的 node 到缓存里，方便后面遍历。
+        var ValueToNodeMapping = {};
+
+        function transform(_edges) {
+            for (let i = 0; i < _edges.length; i++) {
+                const edge = _edges[i];
+                // 解析边，创建 节点
+                let val1 = edge[0];
+                var cacheNode1 = ValueToNodeMapping[val1];
+                if (!cacheNode1) {
+                    cacheNode1 = new ListNode(val1);
+                    ValueToNodeMapping[val1] = cacheNode1;
+                }
+
+                var val2 = edge[1];
+                var cachedNode2 = ValueToNodeMapping[val2];
+                if (!cachedNode2) {
+                    cachedNode2 = new ListNode(val2);
+                    ValueToNodeMapping[val2] = cachedNode2;
+                }
+                cacheNode1.sons.push(cachedNode2);
+                cachedNode2.parent = cacheNode1;
+            }
+        }
+
+        // 使用 DFS ，递归获取. 都可以用缓存表来剪枝，避免重复计算
+        function distance(preSum, node) {
+            if (node.sons.length == 0) {
+                log('node = ' + node.val + '=> ' + preSum);
+                return preSum;
+            }
+            var sum = 0;
+
+            for (let i = 0; i < node.sons.length; i++) {
+                const son = node.sons[i];
+                sum += distance(preSum + 1, son);
+            }
+            log('node = ' + node.val + '=> ' + preSum);
+            return sum;
+        }
+
+        var N = 6, edges = [[0, 1], [0, 2], [2, 3], [2, 4], [2, 5]]
+        // addTwoNumbers(l1, l2)
+        transform(edges);
+        // 剪枝还需要递归的剪枝，暂时失败了，使用广度优先算法。
+        var weightRoad = [];
+        function bfs(node, visitedNode) {
+            var siblings = [].concat(node.sons);
+            if (node.parent) {
+                siblings.push(node.parent);
+            }
+            // 去掉已经访问过的，看看
+            if (visitedNode) {
+                removeItemInArray(visitedNode, siblings);
+            }
+            if (siblings.length == 0) {
+                log('node ( ' + visitedNode.val + ':' + node.val + ' )=> ' + 1);
+                weightRoad.push({ val: visitedNode.val, next: node.val });
+                return;
+            }
+
+            for (let i = 0; i < siblings.length; i++) {
+                const son = siblings[i];
+                bfs(son, node);
+            }
+            if (visitedNode) {
+                log('node ( ' + visitedNode.val + ':' + node.val + ' )=> ' + 1);
+                weightRoad.push({ val: visitedNode.val, next: node.val });
+            }
+        }
+
+        var Keys = Object.keys(ValueToNodeMapping);
+        var result = [];
+        var tempSum = {};
+        for (let i = 0; i < Keys.length; i++) {
+            const key = Keys[i];
+            const node = ValueToNodeMapping[key];
+            weightRoad = [];
+            bfs(node);
+            // 计算 从 node.val 开始的的路径
+            log(weightRoad);
+            // 计算从节点 node ，开始的路径
+            tempSum = {};
+            traversal(node.val, node.val, 0)
+            // log(tempSum);
+            var sum = 0;
+            for (const key in tempSum) {
+                if (Object.hasOwnProperty.call(tempSum, key)) {
+                    const weight = tempSum[key];
+                    sum += weight;
+                }
+            }
+            result.push(sum);
+        }
+        log('>>>');
+        log(result)
+
+        // 从 start 开始，寻找 每个节点 的路径；
+        function traversal(startVal, currentVal, level) {
+            var found = false;
+            for (let j = 0; j < weightRoad.length; j++) {
+                const road = weightRoad[j];
+                if (road.val == currentVal) {
+                    found = true;
+                    traversal(startVal, road.next, level + 1);
+                    console.log(startVal + ' -> ' + currentVal + ' = ' + level)
+                    tempSum[currentVal] = level;
+                }
+            }
+            if (!found) {
+                console.log(startVal + ' -> ' + currentVal + ' = ' + level)
+                tempSum[currentVal] = level;
+            }
+        }
+
+        function removeItemInArray(_item, _arr) {
+            for (let i = _arr.length - 1; i >= 0; i--) {
+                const current = _arr[i];
+                if (current.val === _item.val) {
+                    _arr.splice(i, 1);
+                    break;
+                }
+            }
+        }
+
+        function dfs() {
+            for (const key in ValueToNodeMapping) {
+                if (Object.hasOwnProperty.call(ValueToNodeMapping, key)) {
+                    const node = ValueToNodeMapping[5];
+                    // 把父节点当做子节点。想象下把这个节点拿起来抖一抖之后树的形状。
+                    // 因为只裁剪一次，所以放外面
+                    // var oldGrandPa = null;
+                    var parent = node.parent;
+                    if (parent) {
+                        //     oldGrandPa = parent.parent;
+                        node.sons.push(parent);
+                        parent.parent = node;
+                        node.parent = null;
+                        // 把父节点里的当前节点删除
+                        for (let i = parent.sons.length - 1; i >= 0; i--) {
+                            const current = parent.sons[i];
+                            if (current.val === node.val) {
+                                parent.sons.splice(i, 1);
+                                break;
+                            }
+                        }
+                    }
+                    var sum = distance(0, node);
+                    // 还原
+                    if (parent) {
+                        parent.sons.push(node);
+                        node.parent = parent;
+                        // 把当前节点里的把父节点删除
+                        for (let i = node.sons.length - 1; i >= 0; i--) {
+                            const current = node.sons[i];
+                            if (current.val === parent.val) {
+                                node.sons.splice(i, 1);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

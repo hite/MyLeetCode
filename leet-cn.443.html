@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        // var chars = ["a", "a", "b", "b", "c", "c", "c"];
+        // var chars = ["a", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"];
+        var chars = ["a", "b", "c"];
+        /**
+         * @param {character[]} chars
+         * @return {number}
+         */
+        var compress = function (chars) {
+            var lastChar = null;
+            var startIndx = -1, endIndex = -1;
+            for (let i = chars.length - 1; i >= 0; i--) {
+                const element = chars[i];
+                if (lastChar !== element) {
+                    if (lastChar) {
+                        startIndx = i;
+                        if (endIndex - i > 1) {
+                            chars.splice(startIndx + 1, endIndex - startIndx, lastChar, '' + (endIndex - i));
+                        } else {
+                            chars.splice(startIndx + 1, endIndex - startIndx, lastChar);
+                        }
+
+                    }
+                    endIndex = i;
+                    startIndx = -1;
+                }
+                lastChar = element;
+            }
+            // 最开始的
+            startIndx = 0;
+            if (endIndex - startIndx + 1 > 1) {
+                chars.splice(startIndx + 1, endIndex - startIndx, '' + (endIndex - startIndx + 1));
+            }
+            // 统一处理 10 进制的问题；
+            for (let i = chars.length - 1; i >= 0; i--) {
+                const element = chars[i];
+                if (element.length > 1) {
+                    var parts = element.split('');
+                    for (let j = 0; j < parts.length; j++) {
+                        const num = parts[j];
+                        chars.splice(i + j, j == 0 ? 1 : 0, num);
+                    }
+                }
+            }
+
+            // console.log(chars);
+            return chars.length;
+        };
+        compress(chars);
+        console.log(chars);
+    </script>
+</body>
+
+</html>
