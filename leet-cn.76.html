@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+        // LeetCode 76 题，Minimum Window Substring，难度 Hard：
+        var s = "ADOBECODEBANC", t = "ABC";
+        // 暴力
+        var minWindow3 = function (s, t) {
+            for (let i = 0; i < s.length; i++) {
+                const start = s.charAt(i);
+                for (let j = i + t.length - 1; j < s.length; j++) {
+                    const end = s[j];
+                    var str = s.substring(i, j + 1);
+                    console.log(str);
+                }
+            }
+        };
+        // 滑动窗口
+        function containElements(window, need) {
+            var contain = true;
+            for (const key in need) {
+                if (Object.hasOwnProperty.call(need, key)) {
+                    const n = need[key];
+                    const val = window[key];
+                    if (val === undefined || val < n) {
+                        contain = false;
+                        break;
+                    }
+                }
+            }
+            return contain;
+        }
+
+        var needCharFromT = function (t) {
+            var parts = t.split('');
+            var o = {};
+            for (let i = 0; i < parts.length; i++) {
+                const element = parts[i];
+                if (o[element] == undefined) {
+                    o[element] = 0;
+                }
+                o[element]++;
+            }
+            return o;
+        }
+        var minWindow = function (s, t) {
+            var left = 0, right = 0;//左闭右开
+            var window = {};
+            var need = needCharFromT(t);
+            //  抄别的地方的
+            var start = 0, len = 1000000;
+            var valid = 0;
+            while (right < s.length) {
+                var c = s[right];
+                right++;
+
+                if (need[c]) {
+                    var old = window[c];
+                    if (old == undefined) {
+                        window[c] = 0
+                    }
+                    window[c]++;
+                    if (window[c] == need[c]) {
+                        valid++;
+                    }
+                }
+
+                while (valid == Object.keys(need).length) {
+                    // 在这里更新最小覆盖子串
+                    if (right - left < len) {
+                        start = left;
+                        len = right - left;
+                    }
+
+                    var d = s[left];
+                    left++;
+
+                    var count = window[d];
+                    if (count != undefined) {
+                        if (window[d] == need[d]) {
+                            valid--;
+                        }
+                        window[d]--;
+                    }
+                }
+            }
+            // var len = 0;
+            // while (right < s.length) {
+            //     var c = s[right];
+            //     right++;
+
+            //     if (need[c]) {
+            //         var old = window[c];
+            //         if (old == undefined) {
+            //             window[c] = 0
+            //         }
+            //         window[c]++;
+            //     }
+
+            //     while (containElements(window, need)) {
+            //         len = right - left;
+            //         var d = s[left];
+            //         left++;
+
+            //         var count = window[d];
+            //         if (count != undefined) {
+            //             window[d]--;
+            //         }
+            //     }
+            // }
+            console.log(s.substr(start, len))
+
+            // var ret = [];;// 自研
+            // while (right < s.length) {
+            //     if (!containElements(window, need)) {
+            //         var forward = s[right];
+            //         var old = window[forward];
+            //         if (old == undefined) {
+            //             window[forward] = 0
+            //         }
+            //         window[forward]++;
+
+            //         right++;
+            //     } else {
+            // 递归丢弃
+            //         ret = [left, right]
+            //         var old = s[left];
+            //         window[old] -= 1;
+            //         left++;
+            //     }
+            // }
+            // console.log(ret);
+        };
+        var minWindow2 = function (s, t) {
+            var left = 0, right = 0;//左闭右开
+            var window = {};
+            var need = needCharFromT(t);
+
+            var start, len = -1;
+            while (right < s.length) {
+                var c = s[right];
+                right++;
+
+                if (need[c]) {
+                    var old = window[c];
+                    if (old == undefined) {
+                        window[c] = 0
+                    }
+                    window[c]++;
+                }
+
+                while (containElements(window, need)) {
+                    // 在这里更新最小覆盖子串
+                    if (len == -1 || right - left < len) {
+                        start = left;
+                        len = right - left;
+                    }
+
+                    var d = s[left];
+                    left++;
+
+                    var count = window[d];
+                    if (count != undefined) {
+                        window[d]--;
+                    }
+                }
+            }
+            if (len == -1) {
+                return ''
+            }
+            return s.substr(start, len)
+
+        };
+        // minWindow(s, t);
+    </script>
+</body>
+
+</html>

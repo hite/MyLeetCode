@@ -23,7 +23,7 @@
         function getValueAt(x, y) {
             return maze[x][y];
         }
-
+        // 如果有多条路径。查找的顺序影响能找到的路径的排序
         function availableSibling(node, visitedNotes) {
             var ret = [];
             var x = node[0], y = node[1];
@@ -74,9 +74,12 @@
             var st = [];// 管理所有待验证的节点
             var visitedNotes = [];// 正在探索的路径
             var node = start;
-            while (node && !(node[0] == end[0] && node[1] && end[1])) {
+            while (node) {
                 visitedNotes.push(node);
-
+                // 找到了
+                if ((node[0] == end[0] && node[1] && end[1])) {
+                    break;
+                }
                 // 检测是否有可用邻居，如果有选择第一个，其他的压栈
                 var siblings = availableSibling(node, visitedNotes);
                 if (siblings.length == 0) {
@@ -90,15 +93,70 @@
                     node = st.pop();
                 }
             }
-            if (node) {
-                visitedNotes.push(node);
-            }
+
 
             console.log(visitedNotes);
         }
+        // 尝试用递归的方式
+        function getOut2(visitedNodes, current, end) {
+            if (current[0] === end[0] && current[1] === end[1]) {
+                visitedNodes.push(current);
+                console.log(' Find one = ');
+                console.log(visitedNodes);
+                return;
+            }
+            visitedNodes.push(current);
+            // 继续查找
+            var siblings = availableSibling(current, visitedNodes);
+            for (let i = 0; i < siblings.length; i++) {
+                const element = siblings[i];
+                getOut2([].concat(visitedNodes), element, end);
+            }
+        }
+        // dfs 的栈里保存的是同级的节点里下一次当无节点可用时，下一次要访问的节点；
+        // 而 bfs 的队列里保存的则是下一级节点，当同级五路可走时，需要访问的节点；
 
+        function isEqualNode(node, end) {
+            return (node[0] == end[0] && node[1] == end[1])
+        }
+        function getOut3(start, end) {
+            if (maze.length == 0 || maze[0].length == 0) {
+                return
+            }
+
+            var st = [];// 管理所有待验证的节点
+            var visitedNotes = [];// 正在探索的路径// 有严格的顺序，父亲一定在儿子的前面；
+
+            st.push(start);
+            visitedNotes.push(start)
+            var step = 0;
+            while (st.length > 0) {
+
+                var len = st.length;
+                /* 将当前队列中的所有节点向四周扩散 */
+                for (let i = 0; i < len; i++) {
+                    const element = st.shift();
+                    // 最前面的最先判断，先入栈的优先级高
+                    if (isEqualNode(element, end)) {
+                        console.log(visitedNotes);
+                        console.log(step);
+                        return step;
+                    }
+                    var adjacent = availableSibling(element, visitedNotes);
+                    for (let k = 0; k < adjacent.length; k++) {
+                        const adj = adjacent[k];
+                        st.push(adj);
+                        visitedNotes.push(adj);
+                    }
+                }
+                step++;
+            }
+
+        }
         var start = [0, 0], end = [4, 4];
-        getOut(start, end);
+        // getOut(start, end);
+        // getOut2([], start, end);
+        getOut3(start, end);
     </script>
 </body>
 
