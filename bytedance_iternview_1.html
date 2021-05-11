@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+
+        function TreeNode(x) {
+            this.val = x;
+            this.left = null;
+            this.right = null;
+        }
+
+
+        /**
+          * 
+          * @param root TreeNode类 
+          * @param sum int整型 
+          * @return bool布尔型
+          */
+        var foundIt = false;
+        function _hasPathSum(root, sum) {
+
+            var val = root.val;
+            if (val > sum) {
+                foundIt = false;
+                return
+            };
+            if (val == sum) {
+                foundIt = true;
+                return;
+            }
+
+            if (sum > val) {
+                // 检查子节点是否有满足的子树
+                if (!foundIt && root.left) {
+                    _hasPathSum(root.left, sum - val);
+                }
+                if (!foundIt && root.right) {
+                    _hasPathSum(root.right, sum - val);
+                }
+            }
+        }
+
+        var hasPathSum = function (root, sum) {
+            if (root === null) return false;
+
+            foundIt = false;
+            _hasPathSum(root, sum);
+            return foundIt;
+        }
+
+        var data = new TreeNode(4);
+        var left1 = new TreeNode(5);
+        var right1 = new TreeNode(6);
+        data.left = left1;
+        data.right = right1;
+
+        var right11 = new TreeNode(7);
+        var right12 = new TreeNode(8);
+
+        right1.left = right11;
+        right1.right = right12;
+
+        var left11 = new TreeNode(9);
+        var left12 = new TreeNode(10);
+
+        left1.left = left11;
+        left1.right = left12;
+
+        var right111 = new TreeNode(11);
+        var right112 = new TreeNode(12);
+        right11.left = right111;
+        right11.right = right112;
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        var data = [11, 4, 5, 91, 33, 15, 71, 3, 44];
+
+        function partition(start, end) {
+            console.log('before:');
+            console.log(data);
+            var idx = Math.ceil(Math.random() * (end - start));
+            console.log('random idx = ' + idx);
+            // swap
+            swap(idx, end);
+
+            // small 指向一个比选中值还大的位置，
+            // 一旦在移动时候，发现某个位置比选中值还小，则保持选中值不变，而交换这两个值，使的当前这两个位置的顺序是从打到小的
+            var small = start - 1;
+            for (let index = start; index < end; index++) {
+                const element = data[index];
+                if (element < data[end]) {
+                    small++;
+                    if (small !== index) {
+                        swap(small, index)
+                    }
+                }
+            }
+            // 当最后结束后，因为已经处理过 small 了所以，small++，指向下一个没有处理的，没有比较过的。
+            small++;
+            // 然后和 end 换，这样从 small 左边 + end，都是经过排序的。7
+            swap(small, end);
+
+            console.log('after: small =' + small);
+            console.log(data);
+            return small;
+        }
+
+        function swap(idx, end) {
+            var tmp = data[idx];
+            data[idx] = data[end];
+            data[end] = tmp;
+        }
+
+
+    </script>
+</body>
+
+</html>

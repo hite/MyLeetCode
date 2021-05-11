@@ -81,6 +81,44 @@
             }
         }
 
+        var buildTree2 = function (preorder, inorder) {
+            var rootVal = preorder[0];
+            var root = new TreeNode(rootVal);
+            // 从中序遍历中，分开左右子树
+            var idx = -1;
+            for (let i = 0; i < inorder.length; i++) {
+                const node = inorder[i];
+                if (node == root.val) {
+                    idx = i;
+                    break;
+                }
+            }
+            // 先把中序分为 2 部分
+            var inorder1 = inorder.slice(0, idx);
+            var inorder2 = inorder.slice(idx + 1);
+            // 根据中序的数量，划分前序数组
+            var preorder1 = preorder.slice(1, 1 + inorder1.length);
+            var preorder2 = preorder.slice(1 + inorder1.length);
+            if (inorder1.length == 0) {
+                // 第一个的情况
+            } else if (inorder1.length == 1) {
+                root.left = new TreeNode(inorder1[0]);
+            } else {
+                root.left = buildTree2(preorder1, inorder1);
+            }
+            if (inorder2.length == 0) {
+                // 最后一个的情况
+            } else if (inorder2.length == 1) {
+                root.right = new TreeNode(inorder2[0]);
+            } else {
+                root.right = buildTree2(preorder2, inorder2);
+            }
+
+            return root;
+        }
+        var root2 = buildTree2(preorder, inorder);
+        console.log(root2);
+
         var root = buildTree(preorder, inorder);
         console.log(root)
     </script>

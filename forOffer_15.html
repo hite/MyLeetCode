@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/er-jin-zhi-zhong-1de-ge-shu-lcof/
+        /**
+   * @param {number} n - a positive integer
+   * @return {number}
+   */
+        var hammingWeight = function (n) {
+            var count = 0;
+            var flag = 1;
+            while (flag) {
+                if (n & flag) {
+                    count++;
+                }
+                flag = flag << 1;
+
+            }
+            return count
+        };
+
+    </script>
+</body>
+
+</html>

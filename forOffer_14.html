@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/jian-sheng-zi-lcof/
+        /**
+     * @param {number} n
+     * @return {number}
+     */
+        var max = 1;
+        var cache = {};
+        var cuttingRope = function (n) {
+            if (n == 1) return 1
+            if (n == 2) {
+                return 1;
+            }
+            if (cache[n]) {
+                return cache[n];
+            }
+            var loopCount = parseInt((2 + n) / 2);// 这里展示如何选择中位数，表示循环到中间的哪一位？
+            var tmpMax = 1;
+            for (let i = 2; i <= loopCount; i++) {
+                // 从 2 开始，明显分割为 1 是没有意义的
+                // 除去一部分外，剩下的有两种处理，一种是再次划分，一种是不划分。
+                tmpMax = Math.max(tmpMax, Math.max(i * cuttingRope(n - i), i * (n - i)));
+            }
+            cache[n] = tmpMax;
+            return tmpMax;
+        };
+    </script>
+</body>
+
+</html>

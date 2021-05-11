@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/
+        /**
+         * @param {number} m
+         * @param {number} n
+         * @param {number} k
+         * @return {number}
+         */
+        var counter = {}; // 用来在整个 dfs 里统计哪些点是可以访问的，去重
+        var movingCount = function (m, n, k) {
+            var visited = [];// 保存当前 dfs 路径中，已经访问的节点，防止重复走到节点
+            counter = {};
+            dfs(0, 0, m, n, k, visited);
+            return Object.keys(counter).length;
+        };
+
+        var dfs = function (x, y, m, n, k, visited) {
+            // 是否已经在别的 dfs 路径里走过了
+            if (counter['' + x + '-' + y]) return;
+
+            // 检查有么有越界
+            if (x < 0 || y < 0 || x >= m || y >= n) {
+                return
+            }
+            // 检测是不是已经访问过
+            var found = false;
+            for (let i = 0; i < visited.length; i++) {
+                const vn = visited[i];
+                if (vn.x == x && vn.y == y) {
+                    found = true;
+                    break
+                }
+            }
+            if (found) {
+                return
+            }
+            // 检查是不是不符合 k 的规则
+            var part_x = ('' + x).split('');
+            var part_y = ('' + y).split('');
+            var parts = part_x.concat(part_y);
+            var total = 0;
+            parts.forEach(element => {
+                total += parseInt(element, 10);
+            });
+
+            if (total > k) {
+                return
+            }
+            var current = { x: x, y: y };
+            counter['' + x + '-' + y] = true;
+
+            // 尝试上下左右的可能性
+            dfs(current.x - 1, current.y, m, n, k, visited.concat(current));
+            dfs(current.x, current.y - 1, m, n, k, visited.concat(current));
+            dfs(current.x + 1, current.y, m, n, k, visited.concat(current));
+            dfs(current.x, current.y + 1, m, n, k, visited.concat(current));
+        }
+
+        movingCount(1, 2, 1)
+    </script>
+</body>
+
+</html>

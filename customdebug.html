@@ -105,27 +105,31 @@
         };
         function mydebugger(_line, b, c, d, e) {
             console.log(arguments)
-            return sleepAt(_line).then(function () {
-                kDebugLineNo = -1
-            })
+            var p = await sleepAt(_line)
+            console.log(kDebugLineNo)
         }
 
 
-        async function test1() {
+        function test1() {
             var c = '我吃过了',
                 d = '还没有呢'
             if (b > 100) {
-                await mydebugger(12, b, c, d, succ);
+                mydebugger(12, b, c, d, succ);
                 console.log('line 12')
                 var succ = false;
-                await mydebugger(15, b, c, d, succ);
+                mydebugger(15, b, c, d, succ);
                 console.log('line 15')
             } else {
                 console.log(d)
                 b++
-                await mydebugger(19, b, c, d, succ);
+                mydebugger(19, b, c, d, succ);
                 console.log('line 19')
             }
+            mydebugger(20, b, c, d, succ);
+            console.log('line 20')
+            var filter = {};
+            mydebugger(23, b, c, d, succ, filter);
+            console.log('line 23')
         }
     </script>
 </body>

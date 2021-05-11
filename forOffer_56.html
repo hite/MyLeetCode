@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+
+        var bitCalc = function (nums) {
+            let r = 0;
+            for (const a of nums) {
+                r ^= a;
+            }
+            return r;
+        }
+
+        /**
+         * @param {number[]} nums
+         * @return {number[]}
+         */
+        var singleNumbers = function (nums) {
+            if (nums.length == 2) {
+                return nums;
+            }
+            if (nums.length > 2) {
+                // 先划分为两部分
+                var part1 = nums.slice(0, nums.length / 2);
+                var part2 = nums.slice(nums.length / 2, nums.length);
+
+                var r1 = bitCalc(part1)
+                if (r1 == 0) {
+                    // 则表示在第二部分，继续遍历
+                    return singleNumbers(part2);
+                } else {
+                    return [r1, bitCalc(part2)]
+                }
+            }
+
+        };
+
+    </script>
+</body>
+
+</html>

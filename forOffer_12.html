@@ -144,8 +144,8 @@
 
 
 
-        // var board = [["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]]
-        // var word = "ABCCED"
+        var board = [["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]]
+        var word = "ABCCED"
         // console.log(exist(board, word));
 
         // var board = [["a"]], word = "a"
@@ -155,7 +155,95 @@
         // var a = "aaaaaaaaaaaa"
         var b = [["b"], ["a"], ["b"], ["b"], ["a"]];
         var a = "baa";
-        console.log(exist(b, a))
+        // console.log(exist(b, a))
+
+        function hasVisited(history, node) {
+            for (const obj of history) {
+                if (obj.x == node.x && obj.y == node.y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        // 使用地位 + 迭代的方式输出，
+        function hasPath(matrix, path) {
+            if (path == undefined || path.length == 0) {
+                return false;
+            }
+            var words = path.split('');
+            var findNodes = indexofLetterInBaord(matrix, words.shift());
+            var queue = findNodes;
+
+            var visited = [];
+            while (queue.length > 0) {
+                var current = queue.pop();
+                visited.push(current);
+                if (words.length == 0) {
+                    break;
+                }
+                var word = words.shift();
+
+                var matchedNodes = indexofLetterInBaord(matrix, word);
+
+                var foundNext = false;
+                for (let i = 0; i < matchedNodes.length; i++) {
+                    const value = matchedNodes[i];
+                    if (isSiblingIndx(current, value) && !hasVisited(visited, value)) {
+                        queue.push(value);
+                        foundNext = true;
+                    }
+                }
+                // 回溯
+                if (!foundNext) {
+                    words.unshift(word);
+                    visited.pop();
+                }
+            }
+            console.log(visited);
+            return words.length == 0;
+        }
+
+        function has_path_recursive(matrix, path) {
+            if (path == undefined || path.length == 0) {
+                return false;
+            }
+            var words = path.split('');
+            var findNodes = indexofLetterInBaord(matrix, words[0]);
+            for (let i = 0; i < findNodes.length; i++) {
+                const element = findNodes[i];
+                do_recursive_search(matrix, element, words, []);
+            }
+        }
+
+        function do_recursive_search(matrix, startNode, leftWords, visited) {
+            if (leftWords.length < 1 || startNode.x < 0 || startNode.x >= matrix[0].length || startNode.y < 0 || startNode.y >= matrix.length) {
+                return;
+            }
+
+            if (hasVisited(visited, startNode)) {
+                return;
+            }
+
+            if (matrix[startNode.y][startNode.x] == leftWords[0]) {
+                if (leftWords.length == 1) {
+                    console.log("found it,");
+                    visited.push(startNode)
+                    console.log(visited);
+                    return
+                } else {
+                    // 计算下一个
+                    var newWords = leftWords.slice(1);
+                    var newVisited = visited.concat([startNode]);
+                    do_recursive_search(matrix, { x: startNode.x, y: startNode.y - 1 }, newWords, newVisited);
+                    do_recursive_search(matrix, { x: startNode.x, y: startNode.y + 1 }, newWords, newVisited);
+                    do_recursive_search(matrix, { x: startNode.x - 1, y: startNode.y }, newWords, newVisited);
+                    do_recursive_search(matrix, { x: startNode.x + 1, y: startNode.y }, newWords, newVisited);
+                }
+            }
+
+
+
+        }
     </script>
 </body>
 

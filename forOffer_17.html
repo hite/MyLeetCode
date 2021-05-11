@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/da-yin-cong-1dao-zui-da-de-nwei-shu-lcof/
+        /**
+     * @param {number} n
+     * @return {number[]}
+     */
+        var printNumbers = function (n) {
+            if (n == 1) {
+                var arr = [];
+                for (let i = 1; i < 10; i++) {
+                    arr.push('' + i);
+                }
+                return arr;
+            } else {
+                return __printNumbers(n, 1).slice(1);
+            }
+        };
+        var __printNumbers = function (n) {
+            if (n > 1) {
+                n--;
+                var arr = [];
+                for (let i = 0; i < 10; i++) {
+                    var anos = __printNumbers(n, 1);
+                    anos.forEach(function (val) {
+                        if (i == 0) {
+                            arr.push(val);
+                        } else {
+                            arr.push('' + i + val);
+                        }
+                    });
+                }
+                return arr;
+            } else {
+                var arr = [];
+                for (let i = 0; i < 10; i++) {
+                    arr.push('' + i);
+                }
+                return arr;
+            }
+        };
+
+
+    </script>
+</body>
+
+</html>
