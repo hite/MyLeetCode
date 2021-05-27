@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/
+        /**
+     * @param {number[]} nums
+     * @return {number[]}
+     */
+        var exchange = function (nums) {
+            var left = 0, right = nums.length - 1;
+            while (left < right) {
+                if (isOdd(nums[right])) {
+                    if (isEven(nums[left])) {
+                        var tmp = nums[left];
+                        nums[left] = nums[right];
+                        nums[right] = tmp;
+                    } else {
+                        left++;
+                    }
+                } else {
+                    right--;
+                }
+            }
+            return nums;
+        };
+
+        function isOdd(num) {
+            return (num & 1) == 1
+        }
+        function isEven(num) {
+            return (num & 1) == 0
+        }
+    </script>
+</body>
+
+</html>

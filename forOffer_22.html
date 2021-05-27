@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/
+
+        /**
+     * Definition for singly-linked list.
+    
+     */
+        function ListNode(val) {
+            this.val = val;
+            this.next = null;
+        }
+        /**
+         * @param {ListNode} head
+         * @param {number} k
+         * @return {ListNode}
+         */
+        var getKthFromEnd = function (head, k) {
+            var total = 0;
+            var realHeader = head;
+            while (head) {
+                total++;
+                head = head.next;
+            }
+            if (total < k) {
+                return null;
+            } else {
+                for (let i = 0; i < total - k; i++) {
+                    realHeader = realHeader.next;
+                }
+                return realHeader;
+            }
+        };
+    </script>
+</body>
+
+</html>

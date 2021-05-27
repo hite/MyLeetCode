@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/biao-shi-shu-zhi-de-zi-fu-chuan-lcof/
+        /**
+     * @param {string} s
+     * @return {boolean}
+     * 部分数值列举如下：
+
+["+100", "5e2", "-123", "3.1416", "-1E-16", "0123"]
+部分非数值列举如下：
+
+["12e", "1a3.14", "1.2.3", "+-5", "12e+5.4"]
+
+用自动机逻辑解决
+本题使用有限状态自动机。根据字符类型和合法数值的特点，先定义状态，再画出状态转移图，最后编写代码即可。
+     */
+        var states = [];// 以下标作为 state 的标号
+        states.push({ ' ': 0, 's': 1, 'd': 2, '.': 4 });// state 0 goto
+        states.push({ '.': 4, 'd': 2 });// state 1 goto
+        states.push({ 'e': 5, 'd': 2, '.': 3, ' ': 8 });// state 2 goto
+        states.push({ 'e': 5, 'd': 3, ' ': 8 });// state 3 goto
+        states.push({ 'd': 3 });// state 4 goto
+        states.push({ 'd': 7, 's': 6 });// state 5 goto
+        states.push({ 'd': 7 });// state 6 goto
+        states.push({ 'd': 7, ' ': 8 });// state 7 goto
+        states.push({ ' ': 8 });// state 8 goto
+
+        var isNumber = function (s) {
+            if (s == null) {
+                return false;
+            }
+            var chars = s.split('');
+
+            var step = 0;
+
+            while (chars.length > 0) {
+                var char = chars[0];
+
+                var type = '?';
+                if ('0' <= char && char <= '9') {
+                    type = 'd'
+                } else if ('+-'.indexOf(char) > -1) {
+                    type = 's'
+                } else if ('eE'.indexOf(char) > -1) {
+                    type = 'e'
+                } else if ('. '.indexOf(char) > -1) {
+                    type = char
+                }
+
+                var state = states[step];
+                if (state[type] == undefined) {
+                    return false;
+                }
+                step = state[type]
+
+                chars.shift();
+            }
+
+            return [2, 3, 7, 8].indexOf(step) > -1;
+        };
+
+
+    </script>
+</body>
+
+</html>

@@ -50,6 +50,7 @@
             }
             return o;
         }
+        // 滑动窗口有点想弹簧一样；
         var minWindow = function (s, t) {
             var left = 0, right = 0;//左闭右开
             var window = {};
@@ -60,20 +61,20 @@
             while (right < s.length) {
                 var c = s[right];
                 right++;
-
+                // 扩张，找到包含所有字符串的子字符串；
                 if (need[c]) {
                     var old = window[c];
                     if (old == undefined) {
-                        window[c] = 0
+                        window[c] = 0;
                     }
                     window[c]++;
                     if (window[c] == need[c]) {
                         valid++;
                     }
                 }
-
+                // 缩小，找最小符合条件的
                 while (valid == Object.keys(need).length) {
-                    // 在这里更新最小覆盖子串
+                    // 在这里更新最小覆盖子串，取最小值
                     if (right - left < len) {
                         start = left;
                         len = right - left;

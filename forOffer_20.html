@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/biao-shi-shu-zhi-de-zi-fu-chuan-lcof/
+        /**
+     * @param {string} s
+     * @return {boolean}
+     * 部分数值列举如下：
+
+["+100", "5e2", "-123", "3.1416", "-1E-16", "0123"]
+部分非数值列举如下：
+
+["12e", "1a3.14", "1.2.3", "+-5", "12e+5.4"]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/biao-shi-shu-zhi-de-zi-fu-chuan-lcof
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     */
+        var isNumber = function (s) {
+            if (s == null) {
+                return false;
+            }
+            s = s.trim();
+
+            var chars = s.split('');
+
+            var idx = chars.indexOf('E') > -1 ? chars.indexOf('E') : chars.indexOf('e');
+            if (idx > -1) {
+                return (isFractional(s.slice(0, idx)) && isInteger(s.slice(idx + 1))) || (isInteger(s.slice(0, idx)) && isInteger(s.slice(idx + 1)))
+            } else {
+                return isFractional(chars) || isInteger(chars);
+            }
+        };
+
+        var isFractional = function (arr) {
+            var char = arr[0];
+            if (char == '+' || char == '-') {
+                return __isFractional(arr.slice(1))
+            }
+            return __isFractional(arr);
+        };
+        var __isFractional = function (arr) {
+            var char = arr[0];
+            if (char === '.') {
+                return isAllInt(arr.slice(1))
+            } else if (isShuzi(char)) {// 是数字
+                var idxOfDot = arr.indexOf('.');
+                if (idxOfDot == -1) {
+                    return false;
+                } else {
+                    return isAllInt(arr.slice(0, idxOfDot)) && idxOfDot + 1 == arr.length || isAllInt(arr.slice(0, idxOfDot)) && isAllInt(arr.slice(1 + idxOfDot))
+                }
+            }
+            return false;
+        };
+
+        var isInteger = function (arr) {
+            var char = arr[0];
+            if (char == '+' || char == '-') {
+                return isAllInt(arr.slice(1));
+            } else {
+                return isAllInt(arr);
+            }
+        }
+
+        var isAllInt = function (arr) {
+            if (arr.length == 0) {
+                return false;
+            }
+            var allInt = true;
+            for (let i = 0; i < arr.length; i++) {
+                const e = arr[i];
+                if (!isShuzi(e)) {
+                    allInt = false;
+                    break;
+                }
+            }
+            return allInt;
+        }
+
+        var isShuzi = function (c) {
+            if (c == '') return false;
+            return '0123456789'.indexOf(c) > -1
+        }
+    </script>
+</body>
+
+</html>

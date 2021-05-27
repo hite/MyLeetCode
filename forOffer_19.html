@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/zheng-ze-biao-da-shi-pi-pei-lcof/
+        // Definition for singly-linked list.
+        /**
+     * @param {string} s
+     * @param {string} p
+     * @return {boolean}
+     */
+        // 我用的是后瞻的策略，NFA 用的是前瞻
+        var isMatch = function (s, p) {
+            if (s == null || p == null) {
+                return false;
+            }
+            var chars = s.split('');
+            var patterns = p.split('');
+
+            var lastCandicate = null;// 查看正则里最后一个候选的字符；
+            var lastExpressChar = null;;// 最后一个正则通配符
+            var lastMatchedChar = null;
+            // 用状态机思路来做
+            var exit = false;
+            while (!exit && chars.length > 0 && patterns.length > 0) {
+                var char = chars[0], patt = patterns[0];
+                // CHAR 会不会变成 *、. 呢
+
+                if (char == patt || patt == '.') {
+                    chars.shift();
+                    lastMatchedChar = patterns.shift();
+                } else {
+                    // 如果是非通配符
+                    if (patt !== '.' && patt !== '*') {
+                        // 此时还有 lastCandicate ，其实应该找找 *、。 号等。
+                        if (lastCandicate) {
+                            exit = true;
+                        } else {
+                            // 保留此时的不匹配的符合，等下一个循环看看是否会遇到 * 号
+                            lastCandicate = patt;
+                            lastMatchedChar = patterns.shift();
+                        }
+                    } else if (patt == '*') {
+                        // 检查是否有候选‘不符合’等字符
+                        if (lastCandicate) {
+                            // 把候选词和* 号全部吃掉， * 号当作 0
+                            patterns.shift();
+                            lastCandicate = null;
+                            lastMatchedChar = null;
+                        } else if (lastMatchedChar == char || lastMatchedChar == '.') {
+                            if (chars.length >= patterns.length) {
+                                chars.shift();
+                            } else {// 不能贪婪，需要把 * 号丢弃匹配；
+                                patterns.shift();
+                            }
+                        } else {// 即使 * 不能作为 》 1，去复制 lastMatchedChar；但是可以单纯等作为 0 ，消失掉
+                            patterns.shift();
+                        }
+                    }
+                }
+            }
+            if (lastCandicate == null && chars.length == 0 && patterns.length == 1 && patterns[0] == '*') {
+                return true;
+            } else if (lastCandicate == null && chars.length == 0 && patterns.length == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        // 用递归的方式，判断状态机使用前瞻；
+        //  超时里。
+        // isMatch("aaaaaaaaaaaaab", "a*a*a*a*a*a*a*a*a*a*c") 
+        var isMatch = function (s, p) {
+            if (s == null || p == null) {
+                return false;
+            }
+            var chars = s.split('');
+            var patterns = p.split('');
+            return coreMatch(chars, patterns);
+        }
+
+        var coreMatch = function (chars, patterns) {
+            if (chars.length + patterns.length == 0) {
+                return true;
+            }
+            if (chars.length > 0 && patterns.length == 0) {
+                return false;
+            }
+            // // ??  【】 去match 【*b】
+            // if (chars.length == 0 && patterns.length > 0) {
+            //     return false;
+            // }
+
+            if (patterns[1] == '*') {
+                if (chars[0] == patterns[0] || (patterns[0] == '.' && chars.length > 0)) {
+                    return coreMatch(chars.slice(1), patterns.slice(2)) /* * 号相当于 1 个*/
+                        || coreMatch(chars.slice(1), patterns) /* (a*) 号相当于 n 个 a */
+                        || coreMatch(chars, patterns.slice(2)) /* (a*)* 号相当于 0 个a */;
+
+                } else {
+                    return coreMatch(chars, patterns.slice(2));
+                }
+            }
+            if (chars[0] == patterns[0] || (patterns[0] == '.' && chars.length > 0)) {
+                return coreMatch(chars.slice(1), patterns.slice(1));
+            }
+            return false;
+        }
+
+        // 从后面开始匹配，转化为 DP, 还是会遇到贪婪算法失败，
+        // isMatch("aaa", "ab*a*c*a")
+        var isMatch = function (s, p) {
+            if (s == null || p == null) {
+                return false;
+            }
+            var chars = s.split('');
+            var patterns = p.split('');
+            return coreMatch(chars, patterns);
+        }
+        var coreMatch = function (chars, patterns) {
+            if (chars.length + patterns.length == 0) {
+                return true;
+            }
+            if (chars.length > 0 && patterns.length == 0) {
+                return false;
+            }
+            if (chars.length == 0) {
+                if (patterns.length >= 2 && patterns[patterns.length - 1] == '*') {
+                    return coreMatch(chars, patterns.slice(0, chars.length - 2));
+                } else {
+                    return false;
+                }
+            }
+            // 
+            var lastChar = chars[chars.length - 1],
+                lastPatt = patterns[patterns.length - 1];
+
+            if (lastPatt == '*') {
+                var lastDuplicateChar = patterns[patterns.length - 2];
+                if (lastDuplicateChar) {
+                    if (lastDuplicateChar == lastChar || lastDuplicateChar == '.') {
+                        return coreMatch(chars.slice(0, chars.length - 1), patterns);
+                    } else {
+                        // * = 0
+                        return coreMatch(chars, patterns.slice(0, patterns.length - 2));
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                if (lastChar == lastPatt || lastPatt == '.') {
+                    return coreMatch(chars.slice(0, chars.length - 1), patterns.slice(0, patterns.length - 1));
+                } else {
+                    return false;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
