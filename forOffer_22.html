@@ -26,6 +26,7 @@
          * @return {ListNode}
          */
         var getKthFromEnd = function (head, k) {
+            // 使用两次遍历的方式；
             var total = 0;
             var realHeader = head;
             while (head) {
@@ -40,6 +41,49 @@
                 }
                 return realHeader;
             }
+        };
+
+        var getKthFromEnd = function (head, k) {
+            if (head == null || k < 1) {
+                return null;
+            }
+            // 快慢指针
+            var fast = 0;
+            var fastPointer = head;
+            var slowPointer = head;
+            while (fastPointer) {
+                if (fast >= k) {
+                    slowPointer = slowPointer.next;
+                    fastPointer = fastPointer.next;
+                } else {
+                    fastPointer = fastPointer.next;
+                    fast++;
+                }
+            }
+            if (fast < k) {
+                return null;
+            }
+            return slowPointer;
+        };
+
+        /**
+     * @param {ListNode} head
+     * @param {number} k
+     * @return {ListNode}
+     */
+        var getKthFromEnd = function (head, k) {
+            // copy 的别人内存消耗最少的例子；活用里 k；
+            let prev = head
+            let cur = head
+            while (prev) {
+                prev = prev.next
+                if (k == 0) {
+                    cur = cur.next
+                } else {
+                    k--
+                }
+            }
+            return cur
         };
     </script>
 </body>

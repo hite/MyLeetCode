@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/
+
+        /**
+     * Definition for singly-linked list.
+    
+     */
+        function TreeNode(val) {
+            this.val = val;
+            this.left = null;
+            this.right = null;
+        }
+
+        // 下面的代码思路都是错误的；所谓的左右对称，只需要考虑一棵树内部如何去判断是对称；不应该考虑两棵树的，其中一棵变换和另外；
+        /**
+         * @param {TreeNode} root
+         * @return {boolean}
+         */
+        var isSymmetric = function (root) {
+            if (root == null) return true;
+            var root2 = new TreeNode(root.val);
+            root2.left = root.left;
+
+            return false;
+        };
+
+        var mirrorTree = function (root) {
+            // 用 dfs 解题，记住返回根节点、最后的结果；
+            if (!root) return null;
+
+            var tmp = root.left;
+            root.left = mirrorTree(root.right);
+            root.right = mirrorTree(tmp);
+            return root;
+        };
+
+        var isEqual = function (node1, node2) {
+            if (!node1 && !node2) return true;
+            if (node2 && node1) {
+                return node1.val == node2.val && isEqual(node2.left, node1.left) && isEqual(node2.right, node1.right);
+            }
+
+            return false;
+        };
+
+
+        // 接下来是在一棵树内部，判断是否是对称；
+        var isSymmetric = function (root) {
+            if (root == null) return true;
+            return mirrorEqual(root.left, root.right);
+        }
+
+        var mirrorEqual = function (left, right) {
+            if (left == null && right == null) return true;
+            if (left && right) {
+                return left.val == right.val && mirrorEqual(left.left, right.right) && mirrorEqual(left.right, right.left);
+            } else {
+                return false;
+            }
+        }
+
+        // 看看能不能用迭代的方式实现; <B>迭代其实是把函数调用改为循环里的某个 loop；而且递归里的 return 要改为 continuce </B>
+        var isSymmetric2 = function (root) {
+            if (root == null) return true;
+
+            var queue1 = [root.left];
+            var queue2 = [root.right];
+
+            while (queue1.length > 0 || queue2.length > 0) {
+                var left = queue1.pop();
+                var right = queue2.pop();
+
+                if (left == null && right == null) continue;
+
+                if (left && right) {
+                    if (left.val == right.val) {
+                        queue1.push(left.left);
+                        queue2.push(right.right);
+
+                        queue1.push(left.right);
+                        queue2.push(right.left);
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+    </script>
+</body>
+
+</html>

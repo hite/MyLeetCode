@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/shu-de-zi-jie-gou-lcof/
+
+        /**
+     * Definition for singly-linked list.
+    
+     */
+        function TreeNode(val) {
+            this.val = val;
+            this.left = null;
+            this.right = null;
+        }
+
+        /**
+     * @param {TreeNode} A
+     * @param {TreeNode} B
+     * @return {boolean}
+     */
+
+        var isSubStructure = function (a, b) {
+            if (b == null || a == null) {
+                return false;
+            }
+            // 使用递归的方法，找到目标的根节点，然后递归，这次按照找到所有的为例子
+            // 前序遍历
+            var counter = { value: 0 };
+            travseTree(a, b, counter);
+            return counter.value > 0;
+        };
+        // 会找到所有的
+        var travseTree = function (root, target, counter) {
+            if (root == null) {
+                return;
+            }
+            if (root.val == target.val) {
+                // 比较
+                if (isMatch(root, target)) {
+                    counter.value++;
+                    return
+                }
+            }
+            travseTree(root.left, target, counter);
+            travseTree(root.right, target, counter);
+        }
+
+        // 找到一个就够了
+        var isSubStructure2 = function (root, target) {
+            if (root == null || target == null) {
+                return false;
+            }
+            var result = false;
+            if (root.val === target.val) {
+                result = isMatch(root, target);
+            }
+            if (!result) {
+                result = isSubStructure2(root.left, target);
+            }
+            if (!result) {
+                result = isSubStructure2(root.right, target);
+            }
+            return result;
+        }
+
+        var isMatch = function (tree1, tree2) {
+            if (tree1 == null) return false;
+            // 也需要递归
+            var match = tree1.val == tree2.val;
+            if (match && tree2.left) {
+                match = isMatch(tree1.left, tree2.left);
+            }
+            if (match && tree2.right) {
+                match = isMatch(tree1.right, tree2.right);
+            }
+
+            return match;
+        }
+
+        // 尝试用循环来解题
+        var isMatch3 = function (a, b) {
+            var queue1 = [];
+            var queue2 = [];
+
+            queue1.push(a);
+            queue2.push(b);
+            // 迭代的中心思想，只处理本级节点；
+            while (queue2.length > 0) {
+                t1 = queue1.pop();
+                t2 = queue2.pop();
+
+                if (t2 == null) return true;
+                if (t1 == null) return false;
+                // 退出条件是，只要找到一个不相同就退出，所以每次都只找一个；
+                if (t1.val !== t2.val) return false;
+
+                if (t2.left) {
+                    queue1.push(t1.left);
+                    queue2.push(t2.left);
+                }
+                if (t2.right) {
+                    queue1.push(t1.right);
+                    queue2.push(t2.right);
+                }
+            }
+            return true;
+        }
+        // 尝试用循环来解题
+        var isSubStructure3 = function (root, target) {
+            if (root == null || target == null) {
+                return false;
+            }
+            var queue = [];
+
+            var head = root;
+            while (head) {
+                if (head.val == target.val) {
+                    if (isMatch3(head, target)) return true;
+                }
+                if (head.right) {
+                    queue.push(head.right);
+                }
+                if (head.left) {
+                    queue.push(head.left);
+                }
+
+                head = queue.pop();
+            }
+            return false;
+        }
+
+        // var a = new TreeNode(1);
+        // var a1 = new TreeNode(2);
+        // var a2 = new TreeNode(3);
+        // var a3 = new TreeNode(4);
+
+        // a.left = a1;
+        // a.right = a2;
+        // a1.left = a3;
+
+        // var t = new TreeNode(3);
+        var a = new TreeNode(4);
+        var a1 = new TreeNode(2);
+        var a2 = new TreeNode(3);
+        var a4 = new TreeNode(4);
+        var a5 = new TreeNode(5)
+        var a6 = new TreeNode(6)
+        var a7 = new TreeNode(7)
+        var a8 = new TreeNode(8)
+        var a9 = new TreeNode(9)
+
+        a.left = a1;
+        a.right = a2;
+        a1.left = a4;
+        a1.right = a5;
+
+        a2.left = a6; a2.right = a7;
+        a4.left = a8; a8.left = a9;
+
+
+        var t = new TreeNode(4);
+        var t1 = new TreeNode(8);
+        var t2 = new TreeNode(9);
+        t.left = t1;
+        t1.left = t2;
+    </script>
+</body>
+
+</html>
