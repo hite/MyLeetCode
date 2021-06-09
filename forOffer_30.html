@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/bao-han-minhan-shu-de-zhan-lcof/
+        /**
+     * initialize your data structure here.
+     */
+        var MinStack = function () {
+            this.minimum = null;
+            this.data = [];
+        };
+
+        /** 
+         * @param {number} x
+         * @return {void}
+         */
+        MinStack.prototype.push = function (x) {
+            if (this.minimum === undefined) {
+                this.minimum = x;
+            } else {
+                if (this.minimum >= x) {
+                    this.data.push(this.minimum);
+                    this.minimum = x;
+                }
+            }
+            this.data.push(x);
+        };
+
+        /**
+         * @return {void}
+         */
+        MinStack.prototype.pop = function () {
+            var top = this.data.pop();
+            if (top === this.minimum) {
+                this.minimum = this.data.pop();
+            }
+            return top;
+        };
+
+        /**
+         * @return {number}
+         */
+        MinStack.prototype.top = function () {
+            return this.data[this.data.length - 1];
+        };
+
+        /**
+         * @return {number}
+         */
+        MinStack.prototype.min = function () {
+            return this.minimum;
+        };
+
+        /**
+         * Your MinStack object will be instantiated and called as such:
+         * var obj = new MinStack()
+         * obj.push(x)
+         * obj.pop()
+         * var param_3 = obj.top()
+         * var param_4 = obj.min()
+         */
+
+        // 最容易想到的方法是，修改节点，增加下一个最小值；这样会比较浪费节点；
+        // 另外一种是启用辅助栈，把当 stack pop 时需要退出的最小值记录下来（有些元素退出时是不需要，操作辅助栈的）
+        // 有些高手可以用单栈启用
+
+
+        var matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+    </script>
+</body>
+
+</html>

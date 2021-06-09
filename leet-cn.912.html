@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // https://leetcode-cn.com/problems/sort-an-array/
+        /**
+     * @param {number[]} nums
+     * @return {number[]}
+     */
+        var sortArray = function (nums) {
+            quickSort(nums, 0, nums.length);
+            return nums;
+        };
+        // start = end 是前包含，后不包含形态；
+        var quickSort = function (arr, start, end) {
+            if (end - start > 1) {
+                var sentry = partition(arr, start, end);// 返回局部有序的哨兵的下标，作为分割的标准
+                console.log('1. start = %d , %d', start, sentry)
+                quickSort(arr, start, sentry);
+                console.log('2. start = %d , %d', sentry + 1, end)
+                quickSort(arr, sentry + 1, end)
+            }
+        }
+
+        var partition = function (arr, start, end) {
+            // 不用最后一个做元，而采用随机元是为了, 防止当输入是完全有序时，出现性能极致当劣化
+            var sentry = Math.floor(Math.random() * (end - start)) + start;
+            var pivotElement = arr[sentry];
+            var i = start - 1;
+            console.log('3. original,'); console.log(arr);
+            // 先交换到尾部
+            swap(arr, sentry, end - 1);
+            for (var j = start; j < end - 1; j++) {// 不需要替换最后一个；
+                if (arr[j] <= pivotElement) {
+                    i++;
+                    swap(arr, i, j);
+                }
+            }
+            swap(arr, i + 1, end - 1);// 最后处理，保证前 i 个都是比 i+1 小，而且以排序的是 i+1
+            console.log('3. sorted, sentry = %d, value = %d', i + 1, arr[i + 1]); console.log(arr);
+            return i + 1;
+        }
+
+        function swap(arr, i, j) {
+            var tmp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = tmp;
+        }
+        nums = [5, 2, 3, 1]
+        nums = [-4, 0, 7, 4, 9, -5, -1, 0, -7, -1];
+
+        // 计数排序；计数排序，可以用来解决 topK 的问题；
+        var positionSort = function (nums) {
+            var max = 1, min = nums[0];
+            // 需要最大值，最新值，确定，counter 的容量
+            for (let i = 0; i < nums.length; i++) {
+                const num = nums[i];
+                max = num > max ? num : max;
+                min = num < min ? num : min;
+            }
+            var zero = 0;
+            if (zero > min) {
+                zero = - min;
+            }
+            // 填充值 counter
+            var counter = [];
+            for (let i = 0; i < nums.length; i++) {
+                const num = nums[i];
+                if (counter[zero + num] == undefined) {
+                    counter[zero + num] = 0;
+                }
+                counter[zero + num]++;
+                // 填充时时乱序的，但是填充完毕之后，数组遍历本身时有序的；妙啊
+            }
+
+            // 然后读取 counter 里的数据，从小到达，利用数组天生的顺序特性, 在遍历的过程中实现排序;
+            var idx = 0;
+            for (let i = 0; i < counter.length; i++) {
+                var val = counter[i];
+                while (val > 0) {
+                    nums[idx] = i - zero;
+                    idx++;
+                    val--;
+                }
+            }
+            return nums;
+        }
+        // 冒泡排序也能解决 topK 问题；只需要内侧循环到 k 步就够了
+        var bubbleSort = function (nums) {
+            for (let i = 0; i < nums.length; i++) {
+
+                for (let j = 0; j < nums.length - 1 - i; j++) {// 排序到最后，一步一步，直到最前面
+                    const a = nums[j];
+                    const b = nums[j + 1];
+                    if (a > b) {
+                        swap(nums, j, j + 1);
+                    }
+                }
+                const obj = nums[nums.length - 1 - i];
+                console.log('第 %d 大数字 = %d', i + 1, obj)
+            }
+            return nums;
+        }
+
+        // 堆排序，
+        function TreeNode(val) {
+            this.val = val;
+            this.left = null;
+            this.right = null;
+        }
+
+        function heapSort(nums) {
+            // 先建堆，大根堆
+            var i = 0;
+            var root = new TreeNode(nums[i]);
+
+
+            createBigHeap(root, new TreeNode(nums[i]), nums, i + 1);
+            return root;
+        }
+
+        function createBigHeap(root, parent, nums, i) {
+            if (i > nums.length - 1) return;
+
+            var val = nums[i++];
+            var currnet = new TreeNode(val);
+            if (parent.left == undefined) {
+                if (val > parent.val) {
+                    // 交换节点
+                    currnet.left = parent;
+                    root = currnet;
+                    createBigHeap(root, currnet, nums, i)
+                } else {
+                    parent.left = currnet;
+                    root = parent;
+                    createBigHeap(root, parent, nums, i)
+                }
+            } else if (parent.right == undefined) {
+                if (val > parent.val) {
+                    // 交换节点
+                    currnet.left = parent.left;
+                    currnet.right = parent;
+                    parent.left = null; parent.right = null;
+                    root = currnet;
+                    createBigHeap(root, currnet.left, nums, i)
+
+                } else {
+                    parent.right = currnet;
+                    createBigHeap(root, parent.left, nums, i)
+                }
+            }
+        }
+        //         ## 常见排序方法
+
+        // ### 选择排序（Selection Sort）
+
+        //             这应该最符合人类思维的排序方法，工作原理，首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置，然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。以此类推，直到所有元素均排序完毕。
+
+        //             稳定性：稳定；内排序
+        // 选择排序和冒泡排序是可逆的，同治；
+        var selectionSort = function (nums) {
+            for (let i = 0; i < nums.length; i++) {
+
+                for (let j = i + 1; j < nums.length; j++) {
+                    const target = nums[i];
+                    const num = nums[j];
+                    if (target > num) {
+                        swap(nums, i, j);
+                    }
+                }
+            }
+            return nums;
+        }
+
+        // ### 插入排序（Insertion Sort）
+
+        //     插入排序是前面 ** 已排序数组 ** 找到插入的位置
+        // 插入排序，交换发送在插入排序后，而选择排序则在是交换发生在选择过程，过程结束视为插入完成；
+        var insert_sort = function (nums) {
+            const len = nums.length;
+            // 假设第一个是已经排好序的数组，那么从第二个开始，把第二个插入的前 1 个；
+            for (let i = 1; i < nums.length; i++) {
+                const element = nums[i];
+                // 为了插入第二个，需要对比第二个前面所有的数组，调整位置；
+                for (let j = i; j > 0; j--) {
+                    // 
+                    const target = nums[j];
+                    const obj = nums[j - 1];
+                    if (obj > target) {
+                        swap(nums, j - 1, j);
+                    }
+                }
+            }
+            return nums;
+        }
+        //         ### 希尔排序（Shell Sort）
+
+        //             插入排序进阶版，
+
+        // ** 算法描述：**
+
+        //     我们来看下希尔排序的基本步骤，在此我们选择增量gap = length / 2，缩小增量继续以gap = gap / 2的方式，这种增量选择我们可以用一个序列来表示，{ n / 2, (n / 2) / 2…1 } ，称为增量序列。希尔排序的增量序列的选择与证明是个数学难题，我们选择的这个增量序列是比较常用的，也是希尔建议的增量，称为希尔增量，但其实这个增量序列不是最优的。
+
+        // 先将整个待排序的记录序列分割成为若干子序列分别进行直接插入排序，具体算法描述：
+
+        // 步骤1：选择一个增量序列$t_1，t_2，…，t_k$，其中$t_i > t_j，t_k = 1$；
+
+        // 步骤2：按增量序列个数k，对序列进行k 趟排序；
+
+        // 步骤3：每趟排序，根据对应的增量ti，将待排序列分割成若干长度为m 的子序列，分别对各子表进行直接插入排序。仅增量因子为1 时，整个序列作为一个表来处理，表长度即为整个序列的长度。
+        var shell_sort = function (nums) {
+            var n = nums.length;
+            var gap = Math.floor(n / 2);
+            for (; gap > 0; gap = Math.floor(gap / 2)) {
+                for (let i = gap; i < n; i++) {
+                    // 为了插入第二个，需要对比第二个前面所有的数组，调整位置；
+                    for (let j = i; j >= gap && nums[j - gap] > nums[j]; j = j - gap) {
+                        // 为什么 j = gap，是因为上面取 gap 时有舍去小数点；
+                        swap(nums, j - gap, j);
+                        //？？？ 找到连续的前 几个就可以退出了，剩下的为下轮的循环来处理
+                    }
+                }
+            }
+            return nums;
+        }
+        // ### 归并排序（Merge Sort）
+
+        //     归并排序，采用是分治法，先将数组分成子序列，让子序列有序，再将子序列间有序，合并成有序数组。
+
+        //     算法描述：
+
+        //     把长度为n的输入序列分成长度 n / 2的子序列；
+        //     对两个子序列采用归并排序；
+        //     合并所有子序列。
+        var merge_sort = function (nums) {
+            var n = nums.length;
+            if (n > 1) {
+                var mid = (n >> 1);
+                var left = merge_sort(nums.slice(0, mid))
+                var right = merge_sort(nums.slice(mid, n));
+                return merge(left, right);
+            } else {
+                return nums;
+            }
+        }
+        function merge(arr1, arr2) {
+            var res = [];
+            var i = j = 0;
+            while (i < arr1.length && j < arr2.length) {
+                if (arr1[i] <= arr2[j]) {
+                    res.push(arr1[i]);
+                    i++;
+                } else {
+                    res.push(arr2[j]);
+                    j++;
+                }
+            }
+            // 部分数组还没有添加完毕；
+            if (i < arr1.length)
+                res = res.concat(arr1.slice(i));
+
+            if (j < arr2.length) {
+                res = res.concat(arr2.slice(j))
+            }
+            return res;
+        }
+    </script>
+</body>
+
+</html>

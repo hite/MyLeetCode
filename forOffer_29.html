@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script type="text/javascript">
+        // https://leetcode-cn.com/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/
+
+        /**
+     * @param {number[][]} matrix
+     * @return {number[]}
+     */
+
+        // 先用递归法
+        var spiralOrder = function (matrix) {
+            if (matrix.length == 0) {
+                return []
+            }
+
+            var round = 0;
+            var rowLimit = matrix.length;
+            var columnLimit = matrix[0].length;
+
+            var a = [];
+            while (2 * round < rowLimit && 2 * round < columnLimit) {
+                a = a.concat(printLeft2Right(matrix, round, round, columnLimit - round - 1));
+                a = a.concat(printTop2Down(matrix, columnLimit - 1 - round, round + 1, rowLimit - 1 - round));
+                a = a.concat(printRight2Left(matrix, rowLimit - 1 - round, round, columnLimit - 1 - round));
+                a = a.concat(printDown2Top(matrix, round, round + 1, rowLimit - 1 - round));
+                round++;
+            }
+            return a;
+        };
+        // 核心逻辑是限定 左右、大小边界；
+        var spiralOrder2 = function (matrix) {
+            if (matrix.length == 0) {
+                return []
+            }
+            if (matrix[0].length == 0)
+                return [];
+
+
+            var rowLimit = matrix.length - 1;
+            var columnLimit = matrix[0].length - 1;
+            var x = 0, y = 0;
+            var a = [];
+            // 用最朴素的方式
+            while (true) {
+                // left to right
+                if (x <= columnLimit) {
+                    for (let i = x; i <= columnLimit; i++) {
+                        const element = matrix[y][i];
+                        a.push(element)
+                    }
+                    y++;
+                } else {
+                    break;
+                }
+
+                if (y <= rowLimit) {
+                    // top to down
+                    for (let i = y; i <= rowLimit; i++) {
+                        const element = matrix[i][columnLimit];
+                        a.push(element);
+                    }
+                    columnLimit--;
+                } else {
+                    break;
+                }
+
+                if (x <= columnLimit) {
+                    // right to left
+                    for (var i = columnLimit; i >= x; i--) {
+                        const element = matrix[rowLimit][i];
+                        a.push(element)
+                    }
+                    rowLimit--;
+                } else {
+                    break;
+                }
+
+                if (y <= rowLimit) {
+                    // down to top
+                    for (var i = rowLimit; i >= y; i--) {
+                        const element = matrix[i][x];
+                        a.push(element)
+                    }
+                    x++;
+                } else {
+                    break;
+                }
+            }
+            return a;
+        }
+
+        var printLeft2Right = function (matrix, y, start, end) {
+            if (y < matrix.length) {
+                var row = matrix[y];
+                var ret = [];
+                for (let i = start; i <= end; i++) {// 包含最右边；
+                    const element = row[i];
+                    ret.push(element);
+                }
+                return ret;
+            } else {
+                return [];
+            }
+        }
+        // 从中间开始，包含最下面
+        var printTop2Down = function (matrix, x, start, end) {
+            var ret = [];
+            for (let i = start; i <= Math.min(end, matrix.length - 1); i++) {
+                const row = matrix[i];
+                if (x < row.length) {
+                    ret.push(row[x]);
+                }
+            }
+            return ret;
+        }
+        var printRight2Left = function (matrix, y, start, end) {
+            if (y < matrix.length) {
+                var row = matrix[y];
+                var ret = [];
+                for (let i = end - 1; i >= start; i--) {
+                    const element = row[i];
+                    ret.push(element);
+                }
+                return ret;
+            } else {
+                return [];
+            }
+        }
+        var printDown2Top = function (matrix, x, start, end) {
+            var ret = [];
+            for (let i = Math.min(end, matrix.length - 1) - 1; i >= start; i--) {
+                const row = matrix[i];
+                if (x < row.length) {
+                    ret.push(row[x]);
+                }
+            }
+            return ret;
+        }
+
+
+        var matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+    </script>
+</body>
+
+</html>
