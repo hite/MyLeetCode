@@ -110,54 +110,6 @@
             return nums;
         }
 
-        // 堆排序，
-        function TreeNode(val) {
-            this.val = val;
-            this.left = null;
-            this.right = null;
-        }
-
-        function heapSort(nums) {
-            // 先建堆，大根堆
-            var i = 0;
-            var root = new TreeNode(nums[i]);
-
-
-            createBigHeap(root, new TreeNode(nums[i]), nums, i + 1);
-            return root;
-        }
-
-        function createBigHeap(root, parent, nums, i) {
-            if (i > nums.length - 1) return;
-
-            var val = nums[i++];
-            var currnet = new TreeNode(val);
-            if (parent.left == undefined) {
-                if (val > parent.val) {
-                    // 交换节点
-                    currnet.left = parent;
-                    root = currnet;
-                    createBigHeap(root, currnet, nums, i)
-                } else {
-                    parent.left = currnet;
-                    root = parent;
-                    createBigHeap(root, parent, nums, i)
-                }
-            } else if (parent.right == undefined) {
-                if (val > parent.val) {
-                    // 交换节点
-                    currnet.left = parent.left;
-                    currnet.right = parent;
-                    parent.left = null; parent.right = null;
-                    root = currnet;
-                    createBigHeap(root, currnet.left, nums, i)
-
-                } else {
-                    parent.right = currnet;
-                    createBigHeap(root, parent.left, nums, i)
-                }
-            }
-        }
         //         ## 常见排序方法
 
         // ### 选择排序（Selection Sort）
@@ -272,6 +224,203 @@
             }
             return res;
         }
+
+        // 堆排序，有点难啊. 先用属性结构建一个二叉树；，需要 parent 节点；
+        function TreeNode(val) {
+            this.parent = null;
+            this.val = val;
+            this.left = null;
+            this.right = null;
+        }
+
+        function heapSort(nums) {
+            // 先建堆，大根堆
+            if (nums.length <= 1) {
+                return nums;
+            }
+            // 先建堆
+            var root = setupHeap(nums);
+            while (root.parent) {
+                root = root.parent;
+            }
+            console.log(root);
+            return nums;
+        }
+
+        function adjustHeap(parent, node) {
+            if (parent.val > node.val) {
+                return
+            }
+
+            var oldParent = parent.parent;
+            var oldLeft = parent.left;
+
+            var oldLeftChild = node.left;
+            var oldRightChild = node.right;
+
+            if (oldLeft) {
+                parent.left = null;
+                node.left = oldLeft;
+                oldLeft.parent = node;
+                // 父亲节点作为右节点
+                node.right = parent;
+                parent.parent = node;
+            } else {
+                // 父亲节点作为左节点
+                node.left = parent;
+                parent.parent = node;
+            }
+
+            if (oldParent) {
+                node.parent = oldParent;
+                if (oldParent.left && oldParent.left.val == parent.val) {
+                    oldParent.left = node;
+                } else if (oldParent.right && oldParent.right.val == parent.val) {
+                    oldParent.right = node;
+                }
+            }
+
+            parent.left = oldLeftChild;
+            parent.right = oldRightChild;
+
+            if (oldParent) {
+                adjustHeap(oldParent, node);
+            }
+        }
+
+        function rebuildLeaves(parent) {
+            //
+            var root = parent;
+            while (root.parent) {
+                root = root.parent;
+            }
+            var leaf = [];
+            var queue = [root];
+            while (queue.length > 0) {
+                var node = queue.shift();
+                if (node.left && node.right) {
+                    // skip
+                } else {
+                    leaf.push(node);
+                }
+                if (node.left) {
+                    queue.push(node.left);
+                }
+                if (node.right) {
+                    queue.push(node.right);
+                }
+            }
+            return leaf;
+        };
+
+        function setupHeap(nums) {
+            var i = 0;
+            var root = new TreeNode(nums[i]);
+
+            var leaves = [root];// 还没有满叶子的节点；如果节点都有节点了，补充到后面；广度有限遍历
+            while (i + 1 < nums.length && leaves.length > 0) {
+                var parent = leaves[0];
+
+                i++;
+                var val = nums[i];
+                var node = new TreeNode(val);
+
+                // 和父元素对比大小
+                if (parent.val < val) {
+                    // 父元素更小，交换，并且一直交换到祖先元素；
+                    //  先添加上，再开始递归的调整
+                    adjustHeap(parent, node);
+                    // 调整之后，有可能多级节点都发生了变换，重新生成 leaves 数组
+                    leaves = rebuildLeaves(node);
+                } else {
+                    if (parent.left) {
+                        parent.right = node;
+                    } else {
+                        parent.left = node;
+                    }
+                    node.parent = parent;
+                    leaves.push(node);
+                }
+
+                if (parent.left && parent.right) {
+                    leaves.shift();
+                }
+            }
+            return root;
+        }
+
+        // 堆排序，有点难啊.用构建数组的方式来代表二叉树；
+        // 还有一个基本概念：查找数组中某个数的父结点和左右孩子结点，比如已知索引为i的数，那么
+
+        //     1.父结点索引：(i - 1) / 2（这里计算机中的除以2，省略掉小数）
+        //     2.左孩子索引：2 * i + 1
+        //     3.右孩子索引：2 * i + 2
+        //     所以上面两个数组可以脑补成堆结构，因为他们满足堆的定义性质：
+        //     大根堆：arr(i) > arr(2 * i + 1) && arr(i) > arr(2 * i + 2)
+        //     小根堆：arr(i) < arr(2 * i + 1) && arr(i) < arr(2 * i + 2)
+        //     ————————————————
+        //     版权声明：本文为CSDN博主「阿顾同学」的原创文章，遵循CC 4.0 BY - SA版权协议，转载请附上原文出处链接及本声明。
+        //     原文链接：https://blog.csdn.net/u010452388/article/details/81283998
+        var createArrHeap = function (nums) {
+            for (var i = 0; i < nums.length; i++) {
+                var parentIdx = Math.abs(parseInt((i - 1) / 2));
+                var currentIdx = i;// 因为每个 root 都可以是树的子节点，所以只需要处理子节点就可以了；相当于处理了所有的节点
+
+                while (nums[currentIdx] > nums[parentIdx]) {
+                    swap(nums, parentIdx, currentIdx);
+                    // 检查交换后，父节点和祖先的关系
+                    currentIdx = parentIdx;
+                    parentIdx = Math.abs(parseInt((currentIdx - 1) / 2));
+                }
+            }
+        }
+        // 向下调整；
+        var adjustHeap = function (nums, idx, size) {
+            // 从 idx 开始调整，因为此时 idx 处的值为末尾的值；位于顶端；
+            var left = idx * 2 + 1;
+            var right = idx * 2 + 2;
+            while (left < size) {// 为何不是 right < size 是因为可能右节点不存在
+                var largestIndx;
+                if (nums[left] < nums[right] && right < size) {
+                    largestIndx = right;
+                } else {
+                    largestIndx = left;
+                }
+                // // 如果父元素大于较大的值，跳过，停止
+                // if (nums[idx] > nums[largestIndx]) {
+                //     break;
+                // }
+                if (nums[idx] > nums[largestIndx]) {
+                    largestIndx = idx;
+                }
+                if (idx == largestIndx) {
+                    break;
+                }
+                // 交换彼此
+                swap(nums, idx, largestIndx);
+                // 并且检查子节点，索引指向被交换后的叶子节点，它值最小；
+                idx = largestIndx;
+                //重新计算交换之后的孩子的索引
+                left = idx * 2 + 1;
+                right = idx * 2 + 2;
+            }
+        }
+
+        var heap_sort = function (nums) {
+
+            createArrHeap(nums);
+            var size = nums.length;
+
+            while (size > 1) {
+                swap(nums, 0, size - 1);
+                size--;
+                adjustHeap(nums, 0, size);
+            }
+
+            return nums;
+        }
+        var nums2 = [3, 6, 8, 5, 7];
+
     </script>
 </body>
 
