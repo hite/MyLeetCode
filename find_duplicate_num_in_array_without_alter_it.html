@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分治</title>
+</head>
+
+<body>
+    <a href="https://me.guanghechen.com/post/quiz/partition/find-duplicate-number/#footnote-2">via 不修改数组找出重复的数字</a>
+    <pre>
+
+    问题描述
+    给定一个长度为 N+1 的数列 A={a0,a1,a2⋯,aN}.
+    其中 1⩽ai⩽N,0⩽i⩽N,N⩾1
+
+    .
+
+    在满足以下限制的前提下找出数组中任意一个重复的数字：
+
+        不能修改输入的数组；
+        只能使用 O(1)
+
+    的额外空间；
+
+    /// 这个题还有一种特殊情况。只有一个值时重复的，请用最快的方法找出来。
+    </pre>
+    <div>请如实回答一下问题，然后我想，怎么样才能发现问题是不对的呢？</div>
+    <script type="text/javascript">
+        // https://www.acwing.com/problem/content/description/15/
+        var nums = [2, 3, 5, 4, 3, 2, 6, 7];
+        function forceFindDuplicate(_arr) {
+            // 第一种解法，能找出所有的数字；
+            // 算法是 时间复杂度 o(n^2)，空间是 o(1)
+            for (let i = 0; i < _arr.length; i++) {
+                const d1 = _arr[i];
+                for (let j = 0; j < _arr.length; j++) {
+                    if (i == j) {
+                        continue;
+                    }
+                    const d2 = _arr[j];
+                    if (d1 === d2) {
+                        return d1;
+                    }
+                }
+            }
+
+            return -1;
+        }
+        // 使用二分法。基于前提：注意理解题干——它一定包含了一个多余的数字。根据鸽笼原理：
+        // 当所有值都存在于 1 ～ n 时，如果没有重复，则 小于 n 值的数量一定和 n 值本身是一致的；
+        // 如果 小于n值的数量大于 n 本身，说明其中有一个被多算咯一次；
+        // 如果少，则说明在另外一个区间；
+        // 所以本算法的目的是去找具体的值，而不是去找下标，不要习惯性的去找下表
+        function divideAndConquer(_arr) {
+            let l = 1, h = _arr.length - 1;// 为什么 -1，因为题目里说了 n+1 长度的数组；
+            for (; l < h;) {
+
+                var m = (l + h) >> 1;
+                var count = 0;
+                _arr.forEach(d => {
+                    if (d <= m && d >= l) {
+                        count++;
+                    }
+                });
+                if (count > (m - l + 1)) {
+                    // 在低部位取值，这个条件连 =m （见上面）都判断了
+                    h = m;
+                } else {
+                    // 不在底部，包括M，那么下一次就从 m+1 开始
+                    l = m + 1;// 
+                }
+            }
+            return l;// 此时 l = h
+        }
+
+        function ListNode(val) {
+            this.val = val;
+            this.next = null;
+        }
+        function loopCheck(_arr) {
+            // 把数组当作链表，重复可以理解为一种环，所以这个问题就当作如何做环监测
+            // 这段理解不对：把数组里的值作为 next_pointer,下标 index 当作 pointer
+            // 而是把值作为 pointer，遍历数组生成链表。
+            // 如果检查该项都 val 是否已经被创建，如果创建了，说明有环，如果没有继续添加到链表后面
+            //     var head = 1;
+            //     var total = 40;
+            //     var fast = head, slow = head
+
+            //     while (total-- > 0) {
+            //         slow = _arr[slow - 1]
+
+            //         var fastValue1 = _arr[fast - 1];
+            //         fast = _arr[fastValue1 - 1];
+
+            //         console.log(`Slow = ${slow}, fast = ${fastValue1} -> ${_arr[fast - 1]}`)
+            //     }
+
+            var head, next;
+            var cache = {}// 以 val 为 key 保存 node
+            for (let i = 0; i < _arr.length; i++) {
+                const e = _arr[i];
+                if (cache[e]) {
+                    console.log('found it = ' + e);
+                    break;// 有环
+                }
+                var node = new ListNode(e);
+                cache[e] = node;
+
+                if (head == null) head = node;
+                if (next == null) next = head;
+
+                next.next = node;
+                next = node;
+            }
+            console.log(head)
+        }
+        function loopCheck2(nums) {
+            // 上面的实现立还是引入了额外的 ListNode，和 cache 都不符合要求，是否可以进一步简化
+
+            // 照抄了参考链接的代码
+            // 经过研究得知，这个算法可行有两个前提，
+            // 1. 第一不存在 0 值，这样避免第一步就原地打转，无法前进，不走第二步就不会有相同元素的说法；
+            // 2. 而且因为数组里的值永远不会= 0，所以必须从 0 开始；
+            // 2. 和最开始想的一样： 每个元素的值是下标，相当于 pointer，默认 pointer 第一个即 index = 0；
+
+            var x = 0, y = 0;
+            // 形如 [2, 3, 2, 3, 1] 这样，一旦进入循环就会导致死循环的数组，可以说明一点：
+            // 如果 x = nums[x], 则表明一定有另外的一个元素的值 = x，才会指向 x的。此时已经是一个环了。
+            while (x == 0 || x != y) {
+                var t = nums[x];
+                x = nums[t];
+                y = nums[y];
+                console.log(`slow = ${y}, fast = ${t} -> ${x}`)
+            }
+            // 此时 y = x，确定的是 y 一定是在环上。
+            for (x = 0; x != y;) {
+                x = nums[x];
+                y = nums[y];
+                console.log(`slow = ${y}, fast =  ${x}`)
+            }
+            // 虽然得知了结果，但是现在需要证明的是
+            // 1. 为何用快慢指针终究会相遇；
+            // 2. 如何确保定位到环之后，从新出发的指针能和老指针回合在
+            // 在纸上证明了。有个小技巧： q 是直线部分，p 是环大小。 q > p 时，以慢指针进入环后相遇的位置为 2p - q，那么说明此时还需要再走 q 才算环都闭合。如果此时，第二个慢指针走 p 步，恰好相遇；
+            //  q < p 时，同理还更简单。
+            return x;
+        }
+
+        var testcases = [
+            {
+                t: [2, 3, 5, 4, 3, 2, 6, 7],
+                a: [2, 3]
+            },
+            {
+                t: [1, 2, 5, 4, 3, 2, 6, 7],
+                a: [2]
+            },
+            {
+                t: [1, 2, 5, 4, 3, 2, 6, 1],
+                a: [1, 2]
+            },
+            {
+                t: [7, 1, 5, 4, 3, 2, 6, 6],
+                a: [6]
+            },
+            {
+                t: [3, 7, 5, 4, 4, 2, 6, 1],
+                a: [4]
+            },
+            {
+                t: [10, 13, 17, 6, 13, 10, 16, 3, 12, 2, 18, 18, 16, 15, 7, 1, 3, 10, 9, 14],
+                a: [10, 13, 16, 3]
+            },
+            {
+                t: [20, 19, 18, 16, 15, 12, 10, 6, 5, 11, 4, 2, 1, 3, 7, 8, 9, 11, 13, 14, 17],
+                a: [11]
+            },
+            {
+                t: [80, 78, 76, 74, 71, 70, 67, 65, 64, 61, 56, 55, 54, 53, 51, 41, 24, 39, 37, 35, 34, 30, 29, 27, 26, 25, 23, 21, 18, 16, 15, 14, 12, 10, 9, 4, 2, 1, 3, 5, 6, 7, 8, 11, 13, 17, 19, 20, 22, 24, 28, 31, 32, 33, 36, 38, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 52, 57, 58, 59, 60, 62, 63, 66, 68, 69, 72, 73, 75, 77, 79],
+                a: [24]
+            }
+        ];
+
+        function run(targetFunc) {
+            var ok = true;
+            testcases.forEach(tc => {
+                var t = tc.t, a = tc.a;
+                var r = targetFunc(t)
+                if (a.indexOf(r) > -1) {
+                    console.log(`done with ${t}`)
+                } else {
+                    var e = new Error(`failed, expect ${a}, got ${r}`)
+                    console.log(e);
+                    console.log(t);
+                    return -1;
+                }
+            });
+            return 0;
+        }
+    </script>
+</body>
+
+</html>

@@ -103,7 +103,7 @@
                 checkResolve(resolve)
             })
         };
-        function mydebugger(_line, b, c, d, e) {
+        async function mydebugger(_line, b, c, d, e) {
             console.log(arguments)
             var p = await sleepAt(_line)
             console.log(kDebugLineNo)

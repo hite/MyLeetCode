@@ -178,7 +178,7 @@
                 while (k < pushed.length && queue[queue.length - 1] !== p) {
                     queue.push(pushed[k++]);
                 }
-
+                // 没找到合适的 push 对象，直接 false
                 if (queue[queue.length - 1] !== p) {
                     return false;
                 }
